@@ -6,5 +6,7 @@
 <AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="scheduler.view.controller.MainScreenController">
    <children>
       <Button fx:id="logoutButton" layoutX="274.0" layoutY="188.0" mnemonicParsing="false" onAction="#logoutButtonHandler" text="Logout" />
+      <Button fx:id="customersButton" layoutX="274.0" layoutY="150.0" mnemonicParsing="false" onAction="#customersButtonHandler" text="Customers" />
+      <Button fx:id="appoointmentsButton" layoutX="274.0" layoutY="120.0" mnemonicParsing="false" onAction="#appointmentsButtonHandler" text="Appointments" />
    </children>
 </AnchorPane>

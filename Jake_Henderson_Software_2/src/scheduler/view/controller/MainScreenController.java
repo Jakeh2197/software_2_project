@@ -26,6 +26,10 @@ public class MainScreenController implements Initializable {
     
     @FXML
     private Button logoutButton;
+    @FXML
+    private Button appointmentsButton;
+    @FXML
+    private Button customersButton;
 
     /**
      * Initializes the controller class.
@@ -51,4 +55,13 @@ public class MainScreenController implements Initializable {
         
     }
     
+    @FXML
+    private void appointmentsButtonHandler(ActionEvent event) {
+        
+    }
+    
+    @FXML
+    private void customersButtonHandler(ActionEvent event) {
+        
+    }
 }
