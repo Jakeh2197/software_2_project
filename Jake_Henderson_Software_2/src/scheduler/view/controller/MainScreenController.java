@@ -39,7 +39,7 @@ public class MainScreenController implements Initializable {
     private void logoutButtonHandler(ActionEvent event) throws IOException {
         
         Parent root = FXMLLoader.load(getClass().
-                getResource("LoginScreen.fxml")); 
+                getResource("../LoginScreen.fxml")); 
         Scene scene = new Scene(root);
         Stage stage = new Stage();
         stage.setTitle("Scheduler");

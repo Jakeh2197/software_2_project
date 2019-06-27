@@ -7,6 +7,7 @@ package scheduler.view.controller;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -19,6 +20,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import scheduler.controller.dbConnector;
 
 /**
  * FXML Controller class
@@ -34,6 +36,8 @@ public class LoginScreenController implements Initializable {
     @FXML
     private Button loginButton;
     
+    private String userName;
+    private String userPassword;
     
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -41,28 +45,33 @@ public class LoginScreenController implements Initializable {
     } 
     
     @FXML
-    private void loginButtonHandler(ActionEvent event) throws IOException {
+    private void loginButtonHandler(ActionEvent event) throws IOException, ClassNotFoundException, SQLException {
         
-        if (userNameTextField.getText().equals("Test") && passwordField.getText().equals("Test")) {
-                Parent root = FXMLLoader.load(getClass().
-                    getResource("MainScreen.fxml")); 
-            Scene scene = new Scene(root);
-            Stage stage = new Stage();
-            stage.setTitle("Scheduler");
-            stage.setScene(scene);
-            stage.show();
-
-            Stage closeStage = (Stage) loginButton.getScene().getWindow();
-            closeStage.close();
-        }
-        else {
+        //verify username and password fields are not empty
+        if (userNameTextField.getText().equals("") || passwordField.getText().equals("")) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Information Dialog");
             alert.setHeaderText("Error!");
-            alert.setContentText("Username or Password is incorrect");
+            alert.setContentText("User name and Password are required");
             alert.showAndWait();
         }
-        
+        //compare entries to database values;
+        else {
+            userName = userNameTextField.getText();
+            userPassword = passwordField.getText();
+            if(dbConnector.connect(userName, userPassword)) {
+                Parent root = FXMLLoader.load(getClass().
+                    getResource("../MainScreen.fxml")); 
+                Scene scene = new Scene(root);
+                Stage stage = new Stage();
+                stage.setTitle("Scheduler");
+                stage.setScene(scene);
+                stage.show();
+
+                Stage closeStage = (Stage) loginButton.getScene().getWindow();
+                closeStage.close();
+            }
+        }
     }
     
 }

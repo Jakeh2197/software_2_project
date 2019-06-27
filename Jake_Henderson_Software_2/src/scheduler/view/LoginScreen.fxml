@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 
 
-<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/10.0.1" fx:controller="scheduler.view.LoginScreenController">
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/10.0.1" fx:controller="scheduler.view.controller.LoginScreenController">
    <children>
       <Label fx:id="userNameLabel" layoutX="271.0" layoutY="101.0" text="User Name" />
       <Label layoutX="277.0" layoutY="159.0" text="Password" />
