@@ -49,6 +49,8 @@ public abstract class dbConnector {
         final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
         final String DB_URL = "jdbc:mysql://52.206.157.109/U04Ftj";
         
+        
+        //credentials for database
         dbUserName = "U04Ftj";
         dbPassword = "53688224861";
         
@@ -71,6 +73,7 @@ public abstract class dbConnector {
             stmt = conn.createStatement();
             rs = stmt.executeQuery("SELECT userName, password FROM user");
             
+            //compare entered username and password to values in database
             while(rs.next()) {
                 userName = rs.getString(1);
                 userPassword = rs.getString(1);
