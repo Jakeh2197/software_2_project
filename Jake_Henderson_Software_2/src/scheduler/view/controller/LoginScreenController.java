@@ -20,7 +20,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import scheduler.controller.dbConnector;
+import static scheduler.Launcher.helper;
+import scheduler.controller.*;
 
 /**
  * FXML Controller class
@@ -59,7 +60,7 @@ public class LoginScreenController implements Initializable {
         else {
             userName = userNameTextField.getText();
             userPassword = passwordField.getText();
-            if(dbConnector.connect(userName, userPassword)) {
+            if(dbHelper.connect(userName, userPassword)) {
                 Parent root = FXMLLoader.load(getClass().
                     getResource("../MainScreen.fxml")); 
                 Scene scene = new Scene(root);
