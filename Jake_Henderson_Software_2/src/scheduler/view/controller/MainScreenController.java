@@ -39,11 +39,7 @@ public class MainScreenController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        try {
-            dbHelper.retrieveUpcomingAppointments();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
+
     }    
     
     @FXML

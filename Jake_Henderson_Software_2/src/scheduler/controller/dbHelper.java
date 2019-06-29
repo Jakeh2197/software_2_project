@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.Arrays;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -100,7 +101,9 @@ public class dbHelper {
         
     }
     
-    public static void retrieveUpcomingAppointments() throws ClassNotFoundException {
+    public static ArrayList retrieveUpcomingAppointments() throws ClassNotFoundException {
+        
+        ArrayList appointments = new ArrayList();
         //connect to database
         try {
             Class.forName("com.mysql.jdbc.Driver");
@@ -124,11 +127,13 @@ public class dbHelper {
                     custId[i] = rs.getInt("customerId");
                 }
             }
-            System.out.println(custId[0]);
+            
         } catch(SQLException e) {
             
         }
-
+        
+        System.out.println(custId[0]);
+        return appointments;
     }
    
     public static int getUserId() {

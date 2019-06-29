@@ -73,6 +73,13 @@ public class LoginScreenController implements Initializable {
                 closeStage.close();
             }
         }
+        
+        //gather appointment data for this user
+        try {
+            dbHelper.retrieveUpcomingAppointments();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
     }
     
 }
