@@ -6,11 +6,15 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import scheduler.controller.dbHelper;
+import scheduler.model.Appointments;
 
 
 public class Launcher extends Application{
     
+    public static Appointments apps = new Appointments();
+        
     public static dbHelper helper = new dbHelper();
+    
     
     @Override
     public void start(Stage stage) throws Exception {

@@ -12,25 +12,25 @@ import java.sql.Statement;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.Arrays;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
+import scheduler.model.Appointments;
+
 
 /**
  *
  * @author Jake
  */
-public class dbHelper {
-            
+public class dbHelper {     
+    
         
     private static String submittedUserName;
     private static String submittedUserPassword;
-    private static String userName;
-    private static String userPassword;
     private static int userId;
     private static int[] custId;
+    
+    private static String customerName;
+    private static String appointmentType;
+    private static String appointmentDate;
+    private static String appointmentTime;
 
     
     //variables for database connection
@@ -68,9 +68,7 @@ public class dbHelper {
         //open connection to database
         try {
             Class.forName("com.mysql.jdbc.Driver");
-            
-            dbHelper.conn = (Connection) DriverManager.getConnection(DB_URL, dbUserName, dbPassword);
-            
+            dbHelper.conn = (Connection) DriverManager.getConnection(DB_URL, dbUserName, dbPassword);   
         } catch(ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
@@ -101,9 +99,9 @@ public class dbHelper {
         
     }
     
-    public static ArrayList retrieveUpcomingAppointments() throws ClassNotFoundException {
+    public static void retrieveUpcomingAppointments() throws ClassNotFoundException {
         
-        ArrayList appointments = new ArrayList();
+        
         //connect to database
         try {
             Class.forName("com.mysql.jdbc.Driver");
@@ -114,11 +112,11 @@ public class dbHelper {
             e.printStackTrace();
         }
         
-        //retrieve data to be used in populating upcoming appointments table
+        //retrieve customerId from customer table
         ResultSet rs;
         try {
             stmt = conn.createStatement();
-            rs = stmt.executeQuery("SELECT customerId FROM appointment WHERE userId=0");
+            rs = stmt.executeQuery("SELECT customerId FROM appointment WHERE userId=" + userId);
             rs.last();
             custId = new int[rs.getRow()];
             rs.beforeFirst();
@@ -126,14 +124,40 @@ public class dbHelper {
                 for(int i = 0; i < custId.length; i++) {
                     custId[i] = rs.getInt("customerId");
                 }
+                
+            }
+                      
+        } catch(SQLException e) {
+            
+        }
+        
+        //retrieve appointment information from appointment table
+        try {
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery("SELECT type, start FROM appointment WHERE userID=" + userId);
+            while(rs.next()) {
+                appointmentType = rs.getString("type");
+                appointmentDate = rs.getDate("start").toString();
+                appointmentTime = rs.getTime("start").toString();
+                
+            }
+        } catch(SQLException e) {
+            
+        }
+        
+        try {
+            stmt = conn.createStatement();
+            for(int i = 0; i < custId.length; i++) {
+                rs = stmt.executeQuery("SELECT customerName FROM customer WHERE customerid=" + custId[i]);
+                while(rs.next()) {
+                    customerName = rs.getString("customerName");
+                }   
             }
             
         } catch(SQLException e) {
             
         }
-        
-        System.out.println(custId[0]);
-        return appointments;
+        Appointments.addAppointment(customerName, appointmentType, appointmentDate, appointmentTime);
     }
    
     public static int getUserId() {
@@ -143,5 +167,4 @@ public class dbHelper {
     public static void setUserId(int aUserId) {
         userId = aUserId;
     }
-    
 }

@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -20,8 +22,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import static scheduler.Launcher.helper;
 import scheduler.controller.*;
+//import scheduler.model.Appointments;
 
 /**
  * FXML Controller class
@@ -29,6 +31,8 @@ import scheduler.controller.*;
  * @author Jake
  */
 public class LoginScreenController implements Initializable {
+    
+//    public static Appointments apps = new Appointments();
 
     @FXML
     private TextField userNameTextField;
@@ -47,8 +51,8 @@ public class LoginScreenController implements Initializable {
     
     @FXML
     private void loginButtonHandler(ActionEvent event) throws IOException, ClassNotFoundException, SQLException {
-        
-        //verify username and password fields are not empty
+                
+//        verify username and password fields are not empty
         if (userNameTextField.getText().equals("") || passwordField.getText().equals("")) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Information Dialog");
@@ -56,11 +60,20 @@ public class LoginScreenController implements Initializable {
             alert.setContentText("User name and Password are required");
             alert.showAndWait();
         }
-        //compare entries to database values;
+//        compare entries to database values
         else {
             userName = userNameTextField.getText();
             userPassword = passwordField.getText();
+//            userName = "test";
+//            userPassword = "test";
             if(dbHelper.connect(userName, userPassword)) {
+                
+                try {
+                    dbHelper.retrieveUpcomingAppointments();
+                } catch (ClassNotFoundException ex) {
+                    Logger.getLogger(MainScreenController.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                
                 Parent root = FXMLLoader.load(getClass().
                     getResource("../MainScreen.fxml")); 
                 Scene scene = new Scene(root);
@@ -68,18 +81,17 @@ public class LoginScreenController implements Initializable {
                 stage.setTitle("Scheduler");
                 stage.setScene(scene);
                 stage.show();
-
+                
                 Stage closeStage = (Stage) loginButton.getScene().getWindow();
                 closeStage.close();
             }
-        }
-        
-        //gather appointment data for this user
-        try {
-            dbHelper.retrieveUpcomingAppointments();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            else {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Information Dialog");
+                alert.setHeaderText("Error!");
+                alert.setContentText("User Name or Password not found");
+                alert.showAndWait();
+            }
         }
     }
-    
 }

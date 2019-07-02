@@ -19,10 +19,10 @@
       </Label>
       <TableView fx:id="upcomingAppointmentsTable" layoutX="48.0" layoutY="100.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="40.0">
         <columns>
-          <TableColumn prefWidth="125.0" text="Customer" />
-          <TableColumn prefWidth="125.0" text="Appoinment Type" />
-            <TableColumn prefWidth="95.0" text="Date" />
-            <TableColumn prefWidth="94.0" text="Time" />
+          <TableColumn fx:id="customerColumn" prefWidth="125.0" text="Customer" />
+          <TableColumn fx:id="appointmentTypeColumn" prefWidth="125.0" text="Appoinment Type" />
+            <TableColumn fx:id="dateColumn" prefWidth="95.0" text="Date" />
+            <TableColumn fx:id="timeColumn" prefWidth="94.0" text="Time" />
         </columns>
       </TableView>
    </children>
