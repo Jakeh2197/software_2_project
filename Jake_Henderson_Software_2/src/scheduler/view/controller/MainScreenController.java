@@ -8,6 +8,8 @@ package scheduler.view.controller;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -19,6 +21,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 import javafx.scene.control.cell.PropertyValueFactory;
+import scheduler.controller.dbHelper;
+import scheduler.model.CustomerDetail;
 import scheduler.model.upcomingAppointments;
 import scheduler.model.upcomingAppointments.App;
 
@@ -81,7 +85,18 @@ public class MainScreenController implements Initializable {
     }
     
     @FXML
-    private void customersButtonHandler(ActionEvent event) {
+    private void customersButtonHandler(ActionEvent event) throws IOException, ClassNotFoundException {
+        
+        CustomerDetail customerDetail = new CustomerDetail();
+        dbHelper.retrieveCustomerDetails();
+        
+        Parent root = FXMLLoader.load(getClass().
+                getResource("../CustomersScreen.fxml")); 
+        Scene scene = new Scene(root);
+        Stage stage = new Stage();
+        stage.setTitle("Scheduler");
+        stage.setScene(scene);
+        stage.show();
         
     }
     

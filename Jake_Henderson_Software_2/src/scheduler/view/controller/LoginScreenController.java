@@ -31,8 +31,6 @@ import scheduler.model.upcomingAppointments;
  * @author Jake
  */
 public class LoginScreenController implements Initializable {
-    
-//    public static Appointments apps = new Appointments();
 
     @FXML
     private TextField userNameTextField;

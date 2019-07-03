@@ -13,6 +13,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import scheduler.model.CustomerDetail;
+import scheduler.model.CustomerDetail.Details;
 
 /**
  * FXML Controller class
@@ -22,28 +25,37 @@ import javafx.scene.control.TableView;
 public class CustomersScreenController implements Initializable {
 
     @FXML
-    private TableView<?> upcomingAppointmentsTable;
+    private TableView<Details> customerDetailsTable;
     @FXML
-    private TableColumn<?, ?> customerNameColumn;
+    private TableColumn<Details, String> customerNameColumn;
     @FXML
-    private TableColumn<?, ?> addressColumn;
+    private TableColumn<Details, String> addressColumn;
     @FXML
-    private TableColumn<?, ?> customerIdColumn;
+    private TableColumn<Details, Integer> customerIdColumn;
     @FXML
     private Button addCustomerButton;
     @FXML
     private Button deleteCustomerButton;
+    
 
     /**
      * Initializes the controller class.
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
-    }    
+
+        if(CustomerDetail.customerDetails != null) {
+            customerDetailsTable.setItems(CustomerDetail.customerDetails);
+            customerNameColumn.setCellValueFactory(new PropertyValueFactory("customerName"));
+            addressColumn.setCellValueFactory(new PropertyValueFactory("customerAddress"));
+            customerIdColumn.setCellValueFactory(new PropertyValueFactory("CustomerId"));
+            customerDetailsTable.getColumns().setAll(customerNameColumn, addressColumn, customerIdColumn);
+        }
+
+    }
 
     @FXML
-    private void addCustomerButtonHandlerr(ActionEvent event) {
+    private void addCustomerButtonHandler(ActionEvent event) {
     }
 
     @FXML

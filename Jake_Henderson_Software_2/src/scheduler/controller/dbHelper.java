@@ -11,10 +11,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.util.ArrayList;
+import scheduler.model.CustomerDetail;
 import scheduler.model.upcomingAppointments;
-import scheduler.model.upcomingAppointments.App;
-
+import scheduler.view.controller.CustomersScreenController;
 
 /**
  *
@@ -97,65 +96,70 @@ public class dbHelper {
     public static void retrieveUpcomingAppointments() throws ClassNotFoundException {
         
         //variables used in upcomingAppointmentsTable
+        int customerId = 0;
+        int userId = 0;
         String customerName = null;
         String appointmentType = null;
         String appointmentDate = null;
         String appointmentTime = null;
-                
-        //connect to database
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            
-            dbHelper.conn = (Connection) DriverManager.getConnection(DB_URL, dbUserName, dbPassword);
-            
-        }catch (ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
-        }
-        
+                        
         //retrieve customerId from customer table
         ResultSet rs;
         try {
             stmt = conn.createStatement();
-            rs = stmt.executeQuery("SELECT customerId FROM appointment WHERE userId=" + userId);
-            rs.last();
-            custId = new int[rs.getRow()];
+            rs = stmt.executeQuery("SELECT type, start, customerId FROM appointment WHERE userID=" + userId);
             rs.beforeFirst();
-            while(rs.next()) {
-                for(int i = 0; i < custId.length; i++) {
-                    custId[i] = rs.getInt("customerId");
-                }
-                
-            }
-                      
-        } catch(SQLException e) {
-            
-        }
-        
-        //retrieve data for variables used in upcomingAppointmentsTable
-        try {
-            stmt = conn.createStatement();
-            for(int i = 0; i < custId.length; i++) {
-                rs = stmt.executeQuery("SELECT customerName FROM customer WHERE customerid=" + custId[i]);
-                while(rs.next()) {
-                    customerName = rs.getString("customerName");
-                }   
-            }
-            
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery("SELECT type, start FROM appointment WHERE userID=" + userId);
             while(rs.next()) {
                 appointmentType = rs.getString("type");
                 appointmentDate = rs.getDate("start").toString();
                 appointmentTime = rs.getTime("start").toString();
+                customerId = rs.getInt("customerId");
+                ResultSet rs1;
+                try {
+                    stmt = conn.createStatement();
+                    rs1 = stmt.executeQuery("SELECT customerName FROM customer WHERE customerid=" + customerId);
+                    while(rs1.next()) {
+                        customerName = rs1.getString("customerName");
+                    }
+                    upcomingAppointments.addAppointment(customerName, appointmentType, appointmentDate, appointmentTime);
+                } catch(SQLException e) {
+                    
+                }   
             }
-
-            //use variables to contstuct object to be added to observable list
-            upcomingAppointments.addAppointment(customerName, appointmentType, appointmentDate, appointmentTime);
+                      
+        } catch(SQLException e) {
+            
+        }      
+    }
+    
+    public static void retrieveCustomerDetails() throws ClassNotFoundException {
+        
+        String customerName = null;
+        String address = null;
+        int customerId = 0;
+        
+        //retrieve customer information used in table
+        ResultSet rs;
+        try {
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery("SELECT * FROM customer");
+            while(rs.next()) {
+                customerName = rs.getString("customerName");
+                customerId = rs.getInt("customerid");
+                ResultSet add;
+                stmt = conn.createStatement();
+                add = stmt.executeQuery("SELECT address FROM address WHERE addressID=" + rs.getInt("addressId"));
+                while(add.next()) {
+                    address = add.getString("address");
+                }
+                CustomerDetail.addCustomerDetails(customerName, address, customerId);
+            }
             
         } catch(SQLException e) {
-            e.printStackTrace();
-        }       
+            
+        }
     }
+
    
     public static int getUserId() {
         return userId;
