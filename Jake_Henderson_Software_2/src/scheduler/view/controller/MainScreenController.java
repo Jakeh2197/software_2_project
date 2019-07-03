@@ -30,22 +30,23 @@ import scheduler.model.Appointments.App;
 public class MainScreenController implements Initializable {
     
     
-    @FXML
     private Button logoutButton;
     @FXML
-    private Button appointmentsButton;
+    private TableView upcomingAppointmentsTable;
+    private TableColumn<App, String> customerColumn;
+    private TableColumn<App, String> appointmentTypeColumn;
+    private TableColumn<App, String> dateColumn;
+    private TableColumn<App, String> timeColumn;   
+    @FXML
+    private TableColumn<?, ?> customerNameColumn;
+    @FXML
+    private TableColumn<?, ?> addressColumn;
+    @FXML
+    private TableColumn<?, ?> customerIdColumn;
     @FXML
     private Button customersButton;
     @FXML
-    private TableView upcomingAppointmentsTable;
-    @FXML
-    private TableColumn<App, String> customerColumn;
-    @FXML
-    private TableColumn<App, String> appointmentTypeColumn;
-    @FXML
-    private TableColumn<App, String> dateColumn;
-    @FXML
-    private TableColumn<App, String> timeColumn;   
+    private Button appointmentsButton;
     
     /**
      * Initializes the controller class.
@@ -82,12 +83,12 @@ public class MainScreenController implements Initializable {
     }
     
     @FXML
-    private void appointmentsButtonHandler(ActionEvent event) {
+    private void customersButtonHandler(ActionEvent event) {
         
     }
     
     @FXML
-    private void customersButtonHandler(ActionEvent event) {
+    private void appointmentsButtonHandler(ActionEvent event) {
         
     }
 
