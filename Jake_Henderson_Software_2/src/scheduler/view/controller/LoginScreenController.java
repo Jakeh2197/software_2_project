@@ -23,8 +23,8 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import scheduler.controller.*;
+import scheduler.model.upcomingAppointments;
 //import scheduler.model.Appointments;
-
 /**
  * FXML Controller class
  *
@@ -67,6 +67,8 @@ public class LoginScreenController implements Initializable {
 //            userName = "test";
 //            userPassword = "test";
             if(dbHelper.connect(userName, userPassword)) {
+                
+                upcomingAppointments apps = new upcomingAppointments();
                 
                 try {
                     dbHelper.retrieveUpcomingAppointments();

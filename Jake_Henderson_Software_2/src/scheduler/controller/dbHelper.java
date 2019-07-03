@@ -12,7 +12,8 @@ import java.sql.Statement;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import scheduler.model.Appointments;
+import scheduler.model.upcomingAppointments;
+import scheduler.model.upcomingAppointments.App;
 
 
 /**
@@ -25,14 +26,8 @@ public class dbHelper {
     private static String submittedUserName;
     private static String submittedUserPassword;
     private static int userId;
-    private static int[] custId;
-    
-    private static String customerName;
-    private static String appointmentType;
-    private static String appointmentDate;
-    private static String appointmentTime;
-
-    
+    private static int[] custId;   
+  
     //variables for database connection
     private static Connection conn;
     private static Statement stmt;
@@ -101,7 +96,12 @@ public class dbHelper {
     
     public static void retrieveUpcomingAppointments() throws ClassNotFoundException {
         
-        
+        //variables used in upcomingAppointmentsTable
+        String customerName = null;
+        String appointmentType = null;
+        String appointmentDate = null;
+        String appointmentTime = null;
+                
         //connect to database
         try {
             Class.forName("com.mysql.jdbc.Driver");
@@ -131,20 +131,7 @@ public class dbHelper {
             
         }
         
-        //retrieve appointment information from appointment table
-        try {
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery("SELECT type, start FROM appointment WHERE userID=" + userId);
-            while(rs.next()) {
-                appointmentType = rs.getString("type");
-                appointmentDate = rs.getDate("start").toString();
-                appointmentTime = rs.getTime("start").toString();
-                
-            }
-        } catch(SQLException e) {
-            
-        }
-        
+        //retrieve data for variables used in upcomingAppointmentsTable
         try {
             stmt = conn.createStatement();
             for(int i = 0; i < custId.length; i++) {
@@ -154,10 +141,20 @@ public class dbHelper {
                 }   
             }
             
-        } catch(SQLException e) {
+            stmt = conn.createStatement();
+            rs = stmt.executeQuery("SELECT type, start FROM appointment WHERE userID=" + userId);
+            while(rs.next()) {
+                appointmentType = rs.getString("type");
+                appointmentDate = rs.getDate("start").toString();
+                appointmentTime = rs.getTime("start").toString();
+            }
+
+            //use variables to contstuct object to be added to observable list
+            upcomingAppointments.addAppointment(customerName, appointmentType, appointmentDate, appointmentTime);
             
-        }
-        Appointments.addAppointment(customerName, appointmentType, appointmentDate, appointmentTime);
+        } catch(SQLException e) {
+            e.printStackTrace();
+        }       
     }
    
     public static int getUserId() {

@@ -19,8 +19,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 import javafx.scene.control.cell.PropertyValueFactory;
-import scheduler.model.Appointments;
-import scheduler.model.Appointments.App;
+import scheduler.model.upcomingAppointments;
+import scheduler.model.upcomingAppointments.App;
 
 /**
  * FXML Controller class
@@ -29,20 +29,18 @@ import scheduler.model.Appointments.App;
  */
 public class MainScreenController implements Initializable {
     
-    
+    @FXML
     private Button logoutButton;
     @FXML
     private TableView upcomingAppointmentsTable;
+    @FXML
     private TableColumn<App, String> customerColumn;
+    @FXML
     private TableColumn<App, String> appointmentTypeColumn;
+    @FXML
     private TableColumn<App, String> dateColumn;
+    @FXML
     private TableColumn<App, String> timeColumn;   
-    @FXML
-    private TableColumn<?, ?> customerNameColumn;
-    @FXML
-    private TableColumn<?, ?> addressColumn;
-    @FXML
-    private TableColumn<?, ?> customerIdColumn;
     @FXML
     private Button customersButton;
     @FXML
@@ -57,7 +55,7 @@ public class MainScreenController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
                 
         //populate upcoming appointments table with applicable data
-        upcomingAppointmentsTable.setItems(Appointments.appointments);
+        upcomingAppointmentsTable.setItems(upcomingAppointments.appointments);
         customerColumn.setCellValueFactory(new PropertyValueFactory("customerName"));
         appointmentTypeColumn.setCellValueFactory(new PropertyValueFactory("appType"));
         dateColumn.setCellValueFactory(new PropertyValueFactory("appDate"));
