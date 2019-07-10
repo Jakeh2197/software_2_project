@@ -62,8 +62,6 @@ public class LoginScreenController implements Initializable {
         else {
             userName = userNameTextField.getText();
             userPassword = passwordField.getText();
-//            userName = "test";
-//            userPassword = "test";
             if(dbHelper.connect(userName, userPassword)) {
                 
                 upcomingAppointments apps = new upcomingAppointments();

@@ -6,7 +6,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import scheduler.controller.dbHelper;
-import scheduler.model.upcomingAppointments;
+import scheduler.model.CustomerDetail;
 
 
 public class Launcher extends Application{

@@ -11,6 +11,7 @@ import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -21,6 +22,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.WindowEvent;
 import scheduler.controller.dbHelper;
 import scheduler.model.CustomerDetail;
 import scheduler.model.upcomingAppointments;
@@ -71,6 +73,8 @@ public class MainScreenController implements Initializable {
     @FXML
     private void logoutButtonHandler(ActionEvent event) throws IOException {
         
+        upcomingAppointmentsTable.getItems().clear();
+        
         Parent root = FXMLLoader.load(getClass().
                 getResource("../LoginScreen.fxml")); 
         Scene scene = new Scene(root);
@@ -87,7 +91,6 @@ public class MainScreenController implements Initializable {
     @FXML
     private void customersButtonHandler(ActionEvent event) throws IOException, ClassNotFoundException {
         
-        CustomerDetail customerDetail = new CustomerDetail();
         dbHelper.retrieveCustomerDetails();
         
         Parent root = FXMLLoader.load(getClass().
@@ -97,11 +100,24 @@ public class MainScreenController implements Initializable {
         stage.setTitle("Scheduler");
         stage.setScene(scene);
         stage.show();
+        stage.setOnCloseRequest((WindowEvent we) -> {
+            System.out.println("Closing window");
+            CustomerDetail.customerDetails.clear();
+        });
+        
         
     }
     
     @FXML
-    private void appointmentsButtonHandler(ActionEvent event) {
+    private void appointmentsButtonHandler(ActionEvent event) throws IOException {
+        
+        Parent root = FXMLLoader.load(getClass().
+                getResource("../AppointmentsScreen.fxml")); 
+        Scene scene = new Scene(root);
+        Stage stage = new Stage();
+        stage.setTitle("Scheduler");
+        stage.setScene(scene);
+        stage.show();
         
     }
 
