@@ -43,6 +43,7 @@ public class CustomersScreenController implements Initializable {
     private Button addCustomerButton;
     @FXML
     private Button deleteCustomerButton;
+        
     
     /**
      * Initializes the controller class.
@@ -58,8 +59,6 @@ public class CustomersScreenController implements Initializable {
             customerIdColumn.setCellValueFactory(new PropertyValueFactory("CustomerId"));
             customerDetailsTable.getColumns().setAll(customerNameColumn, addressColumn, customerIdColumn);
         }
-        
-
         
     }
 
@@ -84,5 +83,7 @@ public class CustomersScreenController implements Initializable {
     public void stop(){
         customerDetailsTable.getItems().clear();
     }
+    
+
 
 }

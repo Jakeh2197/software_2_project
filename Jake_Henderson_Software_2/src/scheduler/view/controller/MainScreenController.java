@@ -100,12 +100,16 @@ public class MainScreenController implements Initializable {
         stage.setTitle("Scheduler");
         stage.setScene(scene);
         stage.show();
+        
+        /*
+            This lambda expression allows me to easily clear the customer table
+            on the next screen whenever the window is closed. This blocks the
+            program from populating the table with duplicate entries. 
+        */
         stage.setOnCloseRequest((WindowEvent we) -> {
-            System.out.println("Closing window");
             CustomerDetail.customerDetails.clear();
         });
-        
-        
+                
     }
     
     @FXML
