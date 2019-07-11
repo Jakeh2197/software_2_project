@@ -13,6 +13,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import scheduler.model.AppointmentDetails;
+import scheduler.model.AppointmentDetails.AppDetails;
 
 /**
  * FXML Controller class
@@ -22,17 +25,17 @@ import javafx.scene.control.TableView;
 public class AppointmentsScreenController implements Initializable {
 
     @FXML
-    private TableView<?> appointmentDetailsTable;
+    private TableView<AppDetails> appointmentDetailsTable;
     @FXML
-    private TableColumn<?, ?> customerNameColumn;
+    private TableColumn<AppDetails, String> customerNameColumn;
     @FXML
-    private TableColumn<?, ?> employeeNameColumn;
+    private TableColumn<AppDetails, String> employeeNameColumn;
     @FXML
-    private TableColumn<?, ?> locationColumn;
+    private TableColumn<AppDetails, String> locationColumn;
     @FXML
-    private TableColumn<?, ?> dateColumn;
+    private TableColumn<AppDetails, String> dateColumn;
     @FXML
-    private TableColumn<?, ?> timeColumn;
+    private TableColumn<AppDetails, String> timeColumn;
     @FXML
     private Button addAppointmentButton;
     @FXML
@@ -43,7 +46,16 @@ public class AppointmentsScreenController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        
+        appointmentDetailsTable.setItems(AppointmentDetails.appDetails);
+        customerNameColumn.setCellValueFactory(new PropertyValueFactory("customerName"));
+        employeeNameColumn.setCellValueFactory(new PropertyValueFactory("employeeName"));
+        locationColumn.setCellValueFactory(new PropertyValueFactory("location"));
+        dateColumn.setCellValueFactory(new PropertyValueFactory("date"));
+        timeColumn.setCellValueFactory(new PropertyValueFactory("time"));
+        appointmentDetailsTable.getColumns().setAll(customerNameColumn, employeeNameColumn, 
+                locationColumn, dateColumn, timeColumn);
+        
     }    
 
     @FXML

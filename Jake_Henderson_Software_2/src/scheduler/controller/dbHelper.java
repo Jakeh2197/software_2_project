@@ -12,6 +12,7 @@ import java.sql.Statement;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import scheduler.model.AppointmentDetails;
 import scheduler.model.CustomerDetail;
 import scheduler.model.upcomingAppointments;
 
@@ -98,17 +99,6 @@ public class dbHelper {
         
     public static void retrieveUpcomingAppointments() throws ClassNotFoundException, SQLException {
         
-        System.out.println(databaseUserName);
-        System.out.println(databaseUserPassword);
-        System.out.println(databaseUserId);
-        
-        try {
-            Class.forName("com.mysql.jdbc.Driver");
-            dbHelper.conn = (Connection) DriverManager.getConnection(DB_URL, dbUserName, dbPassword);   
-        } catch(ClassNotFoundException | SQLException e) {
-            e.printStackTrace();
-        }
-        
         //variables used in upcomingAppointmentsTable
         int customerId = 0;
         String customerName = null;
@@ -156,7 +146,7 @@ public class dbHelper {
         ResultSet rs;
         try {
             stmt = conn.createStatement();
-            rs = stmt.executeQuery("SELECT * FROM customer");
+            rs = stmt.executeQuery("SELECT * FROM customer WHERE active=0");
             while(rs.next()) {
                 customerName = rs.getString("customerName");
                 customerId = rs.getInt("customerid");
@@ -211,6 +201,54 @@ public class dbHelper {
         } catch(SQLException e) {
             
         }
+    }
+    
+    public static void retrieveAppointmentDetails() {
+        
+        //variables used in appointment details table
+        String customerName;
+        String employeeName;
+        String location;
+        String date;
+        String time;
+        
+        try {
+            stmt = conn.createStatement();
+            ResultSet rs = stmt.executeQuery("SELECT customerId, userId, location, start FROM appointment");
+            while(rs.next()) {
+                location = rs.getString("location");
+                date = rs.getDate("start").toString();
+                time = rs.getTime("start").toString();
+                int customerId = rs.getInt("customerid");
+                int userId = rs.getInt("userId");
+                
+                stmt = conn.createStatement();
+                ResultSet cust = stmt.executeQuery("SELECT customerName FROM customer WHERE customerid=" + customerId);
+                while(cust.next()) {
+                    customerName = cust.getString("customerName");
+                    
+                    stmt = conn.createStatement();
+                    ResultSet emp = stmt.executeQuery("SELECT userName FROM user WHERE userId=" + userId);
+                    while(emp.next()) {
+                        employeeName = emp.getString("userName");
+                        AppointmentDetails.addAppointmentDetails(customerName, employeeName, location, date, time);
+                    }
+                }
+              
+            }
+            
+            
+        } catch(SQLException e) {
+            
+        }
+    }
+    
+    public static void deleteCustomer(String customerName) throws SQLException {
+        String sql = "UPDATE customer SET active = 1 WHERE customerName = ?";
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, customerName);
+        System.out.println(ps);
+        ps.executeUpdate();
     }
     
     public static int getUserId() {

@@ -7,9 +7,9 @@ package scheduler.view.controller;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -20,7 +20,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
+import scheduler.controller.dbHelper;
 import scheduler.model.CustomerDetail;
 import scheduler.model.CustomerDetail.Details;
 
@@ -43,6 +43,9 @@ public class CustomersScreenController implements Initializable {
     private Button addCustomerButton;
     @FXML
     private Button deleteCustomerButton;
+    
+    //this will be used to confirm customer deletion
+    private static boolean confirmation; 
         
     
     /**
@@ -51,14 +54,11 @@ public class CustomersScreenController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle rb) {
 
-        if(CustomerDetail.customerDetails != null) {
-            
             customerDetailsTable.setItems(CustomerDetail.customerDetails);
             customerNameColumn.setCellValueFactory(new PropertyValueFactory("customerName"));
             addressColumn.setCellValueFactory(new PropertyValueFactory("customerAddress"));
             customerIdColumn.setCellValueFactory(new PropertyValueFactory("CustomerId"));
             customerDetailsTable.getColumns().setAll(customerNameColumn, addressColumn, customerIdColumn);
-        }
         
     }
 
@@ -76,12 +76,32 @@ public class CustomersScreenController implements Initializable {
     }
 
     @FXML
-    private void deleteCustomerButtonHandler(ActionEvent event) {
-        customerDetailsTable.getItems().clear();
+    private void deleteCustomerButtonHandler(ActionEvent event) throws IOException, SQLException, ClassNotFoundException {
+        
+        Parent root = FXMLLoader.load(getClass().
+                getResource("../Delete.fxml")); 
+        Scene scene = new Scene(root);
+        Stage stage = new Stage();
+        stage.setTitle("Scheduler");
+        stage.setScene(scene);
+        stage.showAndWait();
+        
+        if(this.isConfirmation()) {
+            scheduler.model.CustomerDetail.Details details;
+            details = customerDetailsTable.getSelectionModel().getSelectedItem();
+            dbHelper.deleteCustomer(details.getCustomerName());
+        }
+        CustomerDetail.customerDetails.clear();
+        dbHelper.retrieveCustomerDetails();
+        customerDetailsTable.setItems(CustomerDetail.customerDetails);
     }
-    
-    public void stop(){
-        customerDetailsTable.getItems().clear();
+
+    public boolean isConfirmation() {
+        return confirmation;
+    }
+
+    public static void setConfirmation(boolean confimation) {
+        CustomersScreenController.confirmation = confimation;
     }
     
 

@@ -24,6 +24,7 @@ import javafx.stage.Stage;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.WindowEvent;
 import scheduler.controller.dbHelper;
+import scheduler.model.AppointmentDetails;
 import scheduler.model.CustomerDetail;
 import scheduler.model.upcomingAppointments;
 import scheduler.model.upcomingAppointments.App;
@@ -115,6 +116,8 @@ public class MainScreenController implements Initializable {
     @FXML
     private void appointmentsButtonHandler(ActionEvent event) throws IOException {
         
+        dbHelper.retrieveAppointmentDetails();
+        
         Parent root = FXMLLoader.load(getClass().
                 getResource("../AppointmentsScreen.fxml")); 
         Scene scene = new Scene(root);
@@ -122,6 +125,15 @@ public class MainScreenController implements Initializable {
         stage.setTitle("Scheduler");
         stage.setScene(scene);
         stage.show();
+        
+        /*
+            This lambda expression allows me to easily clear the customer table
+            on the next screen whenever the window is closed. This blocks the
+            program from populating the table with duplicate entries. 
+        */
+        stage.setOnCloseRequest((WindowEvent we) -> {
+            AppointmentDetails.appDetails.clear();
+        });
         
     }
 
