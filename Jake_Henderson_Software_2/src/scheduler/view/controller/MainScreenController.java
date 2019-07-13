@@ -124,7 +124,7 @@ public class MainScreenController implements Initializable {
         stage.show();
         
         /*
-            This lambda expression allows me to easily clear the customer table
+            This lambda expression allows me to easily clear the appointment table
             on the next screen whenever the window is closed. This blocks the
             program from populating the table with duplicate entries. 
         */

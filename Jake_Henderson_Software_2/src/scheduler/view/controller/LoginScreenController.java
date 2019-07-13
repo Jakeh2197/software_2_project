@@ -69,7 +69,7 @@ public class LoginScreenController implements Initializable {
                 try {
                     dbHelper.retrieveUpcomingAppointments();
                 } catch (ClassNotFoundException ex) {
-                    Logger.getLogger(MainScreenController.class.getName()).log(Level.SEVERE, null, ex);
+                    
                 }
                 
                 Parent root = FXMLLoader.load(getClass().

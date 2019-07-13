@@ -12,8 +12,10 @@ import java.sql.Statement;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Timestamp;
 import scheduler.model.AppointmentDetails;
 import scheduler.model.CustomerDetail;
+import scheduler.model.LogPrintWriter;
 import scheduler.model.upcomingAppointments;
 
 /**
@@ -93,6 +95,14 @@ public class dbHelper {
         } catch(SQLException e) {
             e.printStackTrace();
         }
+        
+        if(confirmation == true) {
+            
+            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+            String login = "User: " + databaseUserName + " logged in on: " + timestamp;
+            LogPrintWriter.writeLogin(login);
+
+        }
         return confirmation;
         
     }
@@ -165,7 +175,7 @@ public class dbHelper {
     }
     
     public static void addCustomer(int cityId, String addressOne, 
-            String addressTwo,String postalCode, String phone, String customerName) {
+            String addressTwo,String postalCode, String phone, String customerName) throws IOException {
 
         try {
 
@@ -186,7 +196,6 @@ public class dbHelper {
             ResultSet rs = ps.executeQuery();
             rs.next();
             String addressId = rs.getString(1);
-            System.out.println(addressId);
                         
             //insert customer data into customer table
             String customer = "INSERT INTO customer(customerName, addressId, active, createDate, createdBy, lastUpdate, lastUpdateby) VALUES (?, ?, ?, now(), ?, now(), ?)";
@@ -201,6 +210,8 @@ public class dbHelper {
         } catch(SQLException e) {
             
         }
+        String change = databaseUserName + " added new customer: " + customerName;
+        LogPrintWriter.writeChangeLog(change);
     }
     
     public static void retrieveAppointmentDetails() {
@@ -244,23 +255,27 @@ public class dbHelper {
         } catch(SQLException e) {
             
         }
+        
     }
     
-    public static void deleteCustomer(String customerName) throws SQLException {
+    public static void deleteCustomer(String customerName) throws SQLException, IOException {
         String sql = "UPDATE customer SET active = 1 WHERE customerName = ?";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setString(1, customerName);
         ps.executeUpdate();
+        
+        String change = databaseUserName + " deleted customer: " + customerName;
+        LogPrintWriter.writeChangeLog(change);
     }
     
-    public static void deleteAppointment(int appointmentId) throws SQLException {
-        int customerId = 0;
+    public static void deleteAppointment(int appointmentId) throws SQLException, IOException {
         String sql = "DELETE FROM appointment WHERE appointmentid=?";
-        System.out.println(sql);
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setString(1, Integer.toString(appointmentId));
-        System.out.println(ps);
         ps.execute();
+        
+        String change = databaseUserName + " deleted appointment: " + appointmentId;
+        LogPrintWriter.writeChangeLog(change);
     }
     
     
