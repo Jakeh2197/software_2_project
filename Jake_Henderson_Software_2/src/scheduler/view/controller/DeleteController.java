@@ -26,6 +26,8 @@ public class DeleteController implements Initializable {
     private Button YesButton;
     @FXML
     private Button NoButton;
+    
+    private static boolean confirmation;
 
     /**
      * Initializes the controller class.
@@ -38,7 +40,7 @@ public class DeleteController implements Initializable {
     @FXML
     private void YesButtonHandler(ActionEvent event) {
         
-        CustomersScreenController.setConfirmation(true);
+        this.setConfirmation(true);
         
         Stage stage = (Stage) YesButton.getScene().getWindow();
         stage.close();
@@ -47,10 +49,24 @@ public class DeleteController implements Initializable {
     @FXML
     private void NoButtonHandler(ActionEvent event) {
         
-        CustomersScreenController.setConfirmation(false);
+        this.setConfirmation(false);
         
         Stage stage = (Stage) NoButton.getScene().getWindow();
         stage.close();
+    }
+
+    /**
+     * @return the confirmation
+     */
+    public static boolean isConfirmation() {
+        return confirmation;
+    }
+
+    /**
+     * @param aConfirmation the confirmation to set
+     */
+    public static void setConfirmation(boolean aConfirmation) {
+        confirmation = aConfirmation;
     }
     
 }

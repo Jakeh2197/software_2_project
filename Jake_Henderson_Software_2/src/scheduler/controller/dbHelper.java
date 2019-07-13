@@ -204,23 +204,26 @@ public class dbHelper {
     }
     
     public static void retrieveAppointmentDetails() {
-        
         //variables used in appointment details table
         String customerName;
         String employeeName;
         String location;
         String date;
         String time;
+        int appointmentId;
         
         try {
-            stmt = conn.createStatement();
-            ResultSet rs = stmt.executeQuery("SELECT customerId, userId, location, start FROM appointment");
+            String sql = "SELECT appointmentid, customerId, userId, location, start FROM appointment";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ResultSet rs = ps.executeQuery();
             while(rs.next()) {
+                appointmentId = rs.getInt("appointmentid");
+                int customerId = rs.getInt("customerid");
+                int userId = rs.getInt("userId");
                 location = rs.getString("location");
                 date = rs.getDate("start").toString();
                 time = rs.getTime("start").toString();
-                int customerId = rs.getInt("customerid");
-                int userId = rs.getInt("userId");
+
                 
                 stmt = conn.createStatement();
                 ResultSet cust = stmt.executeQuery("SELECT customerName FROM customer WHERE customerid=" + customerId);
@@ -231,7 +234,7 @@ public class dbHelper {
                     ResultSet emp = stmt.executeQuery("SELECT userName FROM user WHERE userId=" + userId);
                     while(emp.next()) {
                         employeeName = emp.getString("userName");
-                        AppointmentDetails.addAppointmentDetails(customerName, employeeName, location, date, time);
+                        AppointmentDetails.addAppointmentDetails(customerName, employeeName, location, date, time, appointmentId);
                     }
                 }
               
@@ -247,9 +250,19 @@ public class dbHelper {
         String sql = "UPDATE customer SET active = 1 WHERE customerName = ?";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setString(1, customerName);
-        System.out.println(ps);
         ps.executeUpdate();
     }
+    
+    public static void deleteAppointment(int appointmentId) throws SQLException {
+        int customerId = 0;
+        String sql = "DELETE FROM appointment WHERE appointmentid=?";
+        System.out.println(sql);
+        PreparedStatement ps = conn.prepareStatement(sql);
+        ps.setString(1, Integer.toString(appointmentId));
+        System.out.println(ps);
+        ps.execute();
+    }
+    
     
     public static int getUserId() {
         return databaseUserId;

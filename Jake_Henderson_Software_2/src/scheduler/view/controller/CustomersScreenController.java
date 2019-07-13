@@ -42,11 +42,7 @@ public class CustomersScreenController implements Initializable {
     @FXML
     private Button addCustomerButton;
     @FXML
-    private Button deleteCustomerButton;
-    
-    //this will be used to confirm customer deletion
-    private static boolean confirmation; 
-        
+    private Button deleteCustomerButton;       
     
     /**
      * Initializes the controller class.
@@ -86,7 +82,7 @@ public class CustomersScreenController implements Initializable {
         stage.setScene(scene);
         stage.showAndWait();
         
-        if(this.isConfirmation()) {
+        if(DeleteController.isConfirmation()) {
             scheduler.model.CustomerDetail.Details details;
             details = customerDetailsTable.getSelectionModel().getSelectedItem();
             dbHelper.deleteCustomer(details.getCustomerName());
@@ -94,16 +90,6 @@ public class CustomersScreenController implements Initializable {
         CustomerDetail.customerDetails.clear();
         dbHelper.retrieveCustomerDetails();
         customerDetailsTable.setItems(CustomerDetail.customerDetails);
-    }
-
-    public boolean isConfirmation() {
-        return confirmation;
-    }
-
-    public static void setConfirmation(boolean confimation) {
-        CustomersScreenController.confirmation = confimation;
-    }
-    
-
+    }   
 
 }

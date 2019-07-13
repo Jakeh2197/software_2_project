@@ -25,13 +25,15 @@ public class AppointmentDetails {
         private StringProperty location = new SimpleStringProperty();
         private StringProperty date = new SimpleStringProperty();
         private StringProperty time = new SimpleStringProperty();
+        private int appointmentId;
         
-        public AppDetails(String customerName, String employeeName, String location, String date, String time) {
+        public AppDetails(String customerName, String employeeName, String location, String date, String time, int appointmentId) {
             setCustomerName(customerName);
             setEmployeeName(employeeName);
             setLocation(location);
             setDate(date);
             setTime(time);
+            setAppointmentId(appointmentId);
         }
         
         public String getCustomerName() {
@@ -73,11 +75,19 @@ public class AppointmentDetails {
         public void setTime(String time) {
             this.time.set(time);
         }
+
+        public int getAppointmentId() {
+            return appointmentId;
+        }
+
+        public void setAppointmentId(int appointmentId) {
+            this.appointmentId = appointmentId;
+        }
     }
     
             
-    public static void addAppointmentDetails(String customerName, String employeeName, String location, String date, String time) {
-        AppDetails details = new AppDetails(customerName, employeeName, location, date, time);
+    public static void addAppointmentDetails(String customerName, String employeeName, String location, String date, String time, int appointmentId) {
+        AppDetails details = new AppDetails(customerName, employeeName, location, date, time, appointmentId);
         appDetails.add(details);
     }
 }

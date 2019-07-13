@@ -5,15 +5,22 @@
  */
 package scheduler.view.controller;
 
+import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.stage.Stage;
+import scheduler.controller.dbHelper;
 import scheduler.model.AppointmentDetails;
 import scheduler.model.AppointmentDetails.AppDetails;
 
@@ -40,7 +47,7 @@ public class AppointmentsScreenController implements Initializable {
     private Button addAppointmentButton;
     @FXML
     private Button deleteAppointmentButton;
-
+    
     /**
      * Initializes the controller class.
      */
@@ -63,7 +70,24 @@ public class AppointmentsScreenController implements Initializable {
     }
 
     @FXML
-    private void deleteAppointmentButtonHandler(ActionEvent event) {
+    private void deleteAppointmentButtonHandler(ActionEvent event) throws IOException, SQLException {
+        
+        Parent root = FXMLLoader.load(getClass().
+                getResource("../Delete.fxml")); 
+        Scene scene = new Scene(root);
+        Stage stage = new Stage();
+        stage.setTitle("Scheduler");
+        stage.setScene(scene);
+        stage.showAndWait();
+        
+        if(DeleteController.isConfirmation()) {
+            scheduler.model.AppointmentDetails.AppDetails details;
+            details = appointmentDetailsTable.getSelectionModel().getSelectedItem();
+            dbHelper.deleteAppointment(details.getAppointmentId());
+        }
+        AppointmentDetails.appDetails.clear();
+        dbHelper.retrieveAppointmentDetails();
+        appointmentDetailsTable.setItems(AppointmentDetails.appDetails);
     }
     
 }
