@@ -66,7 +66,19 @@ public class AppointmentsScreenController implements Initializable {
     }    
 
     @FXML
-    private void addAppointmentButtonHandler(ActionEvent event) {
+    private void addAppointmentButtonHandler(ActionEvent event) throws IOException, ClassNotFoundException, SQLException {
+        
+        dbHelper.retrieveCustomerDetails();
+        dbHelper.retrieveEmployeeDetails();
+        
+        Parent root = FXMLLoader.load(getClass().
+                getResource("../AddAppointmentScreen.fxml")); 
+        Scene scene = new Scene(root);
+        Stage stage = new Stage();
+        stage.setTitle("Scheduler");
+        stage.setScene(scene);
+        stage.showAndWait();
+        
     }
 
     @FXML

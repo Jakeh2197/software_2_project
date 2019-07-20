@@ -13,8 +13,10 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import scheduler.model.AppointmentDetails;
 import scheduler.model.CustomerDetail;
+import scheduler.model.EmployeeDetails;
 import scheduler.model.LogPrintWriter;
 import scheduler.model.upcomingAppointments;
 
@@ -174,6 +176,19 @@ public class dbHelper {
         }
     }
     
+    public static void retrieveEmployeeDetails() throws SQLException {
+        
+        String employeeName;
+        
+        String retrieveNames = "SELECT userName FROM user";
+        PreparedStatement ps = conn.prepareStatement(retrieveNames);
+        ResultSet rs = ps.executeQuery();
+        while(rs.next()) {
+            employeeName = rs.getString("userName");
+            EmployeeDetails.addEmployeeName(employeeName);
+        }
+    }
+    
     public static void addCustomer(int cityId, String addressOne, 
             String addressTwo,String postalCode, String phone, String customerName) throws IOException {
 
@@ -268,6 +283,49 @@ public class dbHelper {
         LogPrintWriter.writeChangeLog(change);
     }
     
+    public static void addAppointment(String customerName, String employeeName, String title, String description, String location, String contact, String type, String date, String startTime, String endTime) throws SQLException {
+        
+        int customerId;
+        int userId;
+        String start = date + " " + startTime;
+        String end = date + " " + endTime;
+        
+        String selectCustomerId = "SELECT customerid FROM customer WHERE customerName=?";
+        PreparedStatement ps = conn.prepareStatement(selectCustomerId);
+        ps.setString(1, customerName);
+        ResultSet rs = ps.executeQuery();
+        while(rs.next()) {
+            customerId = rs.getInt("customerid");
+            
+            String selectUserId ="SELECT userId FROM user WHERE userName=?";
+            PreparedStatement ps1 = conn.prepareStatement(selectUserId);
+            ps1.setString(1, employeeName);
+            ResultSet rs1 = ps1.executeQuery();
+            while(rs1.next()) {
+                userId = rs1.getInt("userId");
+                String addAppointment = "INSERT INTO appointment (customerId, userId, title, description, location, contact, type, url, start, end, createDate, createdBy, lastUpdate, lastUpdateBy) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now(), ?, now(), ?)";
+                PreparedStatement ps2 = conn.prepareStatement(addAppointment);
+                ps2.setString(1, Integer.toString(customerId));
+                ps2.setString(2, Integer.toString(userId));
+                ps2.setString(3, title);
+                ps2.setString(4, description);
+                ps2.setString(5, location);
+                ps2.setString(6, contact);
+                ps2.setString(7, type);
+                ps2.setString(8, "");
+                ps2.setString(9, start);
+                ps2.setString(10, end);
+                ps2.setString(11, databaseUserName);
+                ps2.setString(12, databaseUserName);
+                ps2.executeUpdate();
+            }
+        }
+        
+        
+        
+        
+    }
+    
     public static void deleteAppointment(int appointmentId) throws SQLException, IOException {
         String sql = "DELETE FROM appointment WHERE appointmentid=?";
         PreparedStatement ps = conn.prepareStatement(sql);
@@ -276,13 +334,12 @@ public class dbHelper {
         
         String change = databaseUserName + " deleted appointment: " + appointmentId;
         LogPrintWriter.writeChangeLog(change);
-    }
-    
+    }   
     
     public static int getUserId() {
         return databaseUserId;
     }
-
+        
     public static void setUserId(int aUserId) {
         databaseUserId = aUserId;
     }
