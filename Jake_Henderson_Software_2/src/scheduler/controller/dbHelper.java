@@ -13,7 +13,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import scheduler.model.AppointmentDetails;
 import scheduler.model.CustomerDetail;
 import scheduler.model.EmployeeDetails;

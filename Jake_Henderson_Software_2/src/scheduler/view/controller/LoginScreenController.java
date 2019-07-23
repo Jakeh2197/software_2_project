@@ -8,7 +8,9 @@ package scheduler.view.controller;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.ResourceBundle;
+import java.util.TimeZone;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -21,6 +23,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import scheduler.controller.*;
+import scheduler.model.Location;
 import scheduler.model.upcomingAppointments;
 //import scheduler.model.Appointments;
 /**
@@ -63,6 +66,18 @@ public class LoginScreenController implements Initializable {
             if(dbHelper.connect(userName, userPassword)) {
                 
                 upcomingAppointments apps = new upcomingAppointments();
+                
+                //create location object for each of the locations
+                Location newYork = new Location("New York", "America/New_York");
+                Location phoenix = new Location("Phoenix", "America/Phoenix");
+                Location london = new Location("London", "Europe/London");
+                
+                //retrieve user location time zone
+                Calendar user = Calendar.getInstance();
+                TimeZone userTimeZone = user.getTimeZone();
+                
+                //create location for where the user is located
+                Location userLocation = new Location("User Location", userTimeZone.getID());
                 
                 try {
                     dbHelper.retrieveUpcomingAppointments();
