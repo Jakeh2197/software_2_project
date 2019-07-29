@@ -30,7 +30,6 @@ public class dbHelper {
       
     //this will be used to retrieve username whenver changes are made
     private static int databaseUserId;
-
   
     //variables for database connection
     private static Connection conn;
@@ -126,11 +125,11 @@ public class dbHelper {
     public  void retrieveUpcomingAppointments() throws ClassNotFoundException, SQLException {
         
         //variables used in upcomingAppointmentsTable
-        int customerId = 0;
+        int customerId;
         String customerName = null;
-        String appointmentType = null;
-        String appointmentDate = null;
-        String appointmentTime = null;
+        String appointmentType;
+        String appointmentDate;
+        String appointmentTime;
                         
         //retrieve customerId from customer table
         ResultSet rs;
