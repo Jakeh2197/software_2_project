@@ -1,0 +1,2 @@
+Jake deleted customer: Mike Henderson
+test deleted appointment: 75

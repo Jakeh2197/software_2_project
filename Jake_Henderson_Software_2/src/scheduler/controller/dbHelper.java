@@ -13,6 +13,9 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import scheduler.model.AppointmentDetails;
 import scheduler.model.CustomerDetail;
 import scheduler.model.EmployeeDetails;
@@ -282,13 +285,13 @@ public class dbHelper {
         LogPrintWriter.writeChangeLog(change);
     }
     
-    public static void addAppointment(String customerName, String employeeName, String title, String description, String location, String contact, String type, String date, String startTime, String endTime) throws SQLException {
-        
+    public static void addAppointment(String customerName, String employeeName, String title, String description, String location, String contact, String type, LocalDate date, LocalTime startTime, LocalTime endTime) throws SQLException, DateTimeParseException {
+                
         int customerId;
         int userId;
-        String start = date + " " + startTime;
-        String end = date + " " + endTime;
-        
+        String start = date + " " + startTime.toString();
+        String end = date + " " + endTime.toString();
+
         String selectCustomerId = "SELECT customerid FROM customer WHERE customerName=?";
         PreparedStatement ps = conn.prepareStatement(selectCustomerId);
         ps.setString(1, customerName);
@@ -319,10 +322,7 @@ public class dbHelper {
                 ps2.executeUpdate();
             }
         }
-        
-        
-        
-        
+  
     }
     
     public static void deleteAppointment(int appointmentId) throws SQLException, IOException {
