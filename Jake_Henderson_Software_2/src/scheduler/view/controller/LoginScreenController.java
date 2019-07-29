@@ -40,17 +40,18 @@ public class LoginScreenController implements Initializable {
     @FXML
     private Button loginButton;
     
-    private String userName;
-    private String userPassword;
-    
+    public static dbHelper helper;
+        
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        // TODO
+        
     } 
     
     @FXML
     private void loginButtonHandler(ActionEvent event) throws IOException, ClassNotFoundException, SQLException {
-                
+        
+        helper = new dbHelper();
+                        
 //        verify username and password fields are not empty
         if (userNameTextField.getText().equals("") || passwordField.getText().equals("")) {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -61,9 +62,12 @@ public class LoginScreenController implements Initializable {
         }
 //        compare entries to database values
         else {
-            userName = userNameTextField.getText();
-            userPassword = passwordField.getText();
-            if(dbHelper.connect(userName, userPassword)) {
+            
+            String userName = userNameTextField.getText(); 
+            String userPassword = passwordField.getText();
+            userNameTextField.clear();
+            passwordField.clear();
+            if(helper.connect(userName, userPassword)) {
                 
                 upcomingAppointments apps = new upcomingAppointments();
                 
@@ -80,7 +84,7 @@ public class LoginScreenController implements Initializable {
                 Location userLocation = new Location("User Location", userTimeZone.getID());
                 
                 try {
-                    dbHelper.retrieveUpcomingAppointments();
+                    helper.retrieveUpcomingAppointments();
                 } catch (ClassNotFoundException ex) {
                     
                 }

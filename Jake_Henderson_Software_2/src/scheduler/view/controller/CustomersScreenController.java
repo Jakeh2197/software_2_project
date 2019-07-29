@@ -23,6 +23,7 @@ import javafx.stage.Stage;
 import scheduler.controller.dbHelper;
 import scheduler.model.CustomerDetail;
 import scheduler.model.CustomerDetail.Details;
+import static scheduler.view.controller.LoginScreenController.helper;
 
 /**
  * FXML Controller class
@@ -85,10 +86,10 @@ public class CustomersScreenController implements Initializable {
         if(DeleteController.isConfirmation()) {
             scheduler.model.CustomerDetail.Details details;
             details = customerDetailsTable.getSelectionModel().getSelectedItem();
-            dbHelper.deleteCustomer(details.getCustomerName());
+            helper.deleteCustomer(details.getCustomerName());
         }
         CustomerDetail.customerDetails.clear();
-        dbHelper.retrieveCustomerDetails();
+        helper.retrieveCustomerDetails();
         customerDetailsTable.setItems(CustomerDetail.customerDetails);
     }   
 

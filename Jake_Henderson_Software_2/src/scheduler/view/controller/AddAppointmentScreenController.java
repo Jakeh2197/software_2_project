@@ -9,7 +9,6 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
@@ -28,6 +27,7 @@ import scheduler.model.CustomerDetail;
 import scheduler.model.CustomerDetail.Details;
 import scheduler.model.EmployeeDetails;
 import scheduler.model.EmployeeDetails.EmployeeName;
+import static scheduler.view.controller.LoginScreenController.helper;
 
 /**
  * FXML Controller class
@@ -216,7 +216,7 @@ public class AddAppointmentScreenController implements Initializable {
             //attempt to assign value to date and insert values into appointment table
             try {
                 date = LocalDate.parse(appDate);
-                dbHelper.addAppointment(customerName, employeeName, title, description, location, contact, type, date, startTime, endTime);
+                helper.addAppointment(customerName, employeeName, title, description, location, contact, type, date, startTime, endTime);
             } catch(DateTimeParseException e) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Improper format entered for Date field");
@@ -225,9 +225,7 @@ public class AddAppointmentScreenController implements Initializable {
                 alert.showAndWait();
             }
         }
-                       
-        
-            
+      
     }
 
     @FXML

@@ -7,6 +7,7 @@ package scheduler.view.controller;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -16,6 +17,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.stage.Stage;
 import scheduler.controller.dbHelper;
+import static scheduler.view.controller.LoginScreenController.helper;
 
 /**
  * FXML Controller class
@@ -57,7 +59,7 @@ public class AddCustomerScreenController implements Initializable {
     }    
     
     @FXML
-    private void addCustomerButtonHandler(ActionEvent event) throws IOException {
+    private void addCustomerButtonHandler(ActionEvent event) throws IOException, SQLException {
         
         //varriables used to create new customer
         String customerName = customerNameTextField.getText();
@@ -67,7 +69,7 @@ public class AddCustomerScreenController implements Initializable {
         String phoneNumber = phoneNumberTextField.getText();
         String city = cityTextField.getText();
         
-        dbHelper.addCustomer(29, addressOne, addressTwo, postalCode, phoneNumber, customerName);
+        helper.addCustomer(29, addressOne, addressTwo, postalCode, phoneNumber, customerName);
         
 
     }

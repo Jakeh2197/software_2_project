@@ -23,6 +23,7 @@ import javafx.stage.Stage;
 import scheduler.controller.dbHelper;
 import scheduler.model.AppointmentDetails;
 import scheduler.model.AppointmentDetails.AppDetails;
+import static scheduler.view.controller.LoginScreenController.helper;
 
 /**
  * FXML Controller class
@@ -68,8 +69,8 @@ public class AppointmentsScreenController implements Initializable {
     @FXML
     private void addAppointmentButtonHandler(ActionEvent event) throws IOException, ClassNotFoundException, SQLException {
         
-        dbHelper.retrieveCustomerDetails();
-        dbHelper.retrieveEmployeeDetails();
+        helper.retrieveCustomerDetails();
+        helper.retrieveEmployeeDetails();
         
         Parent root = FXMLLoader.load(getClass().
                 getResource("../AddAppointmentScreen.fxml")); 
@@ -95,10 +96,10 @@ public class AppointmentsScreenController implements Initializable {
         if(DeleteController.isConfirmation()) {
             scheduler.model.AppointmentDetails.AppDetails details;
             details = appointmentDetailsTable.getSelectionModel().getSelectedItem();
-            dbHelper.deleteAppointment(details.getAppointmentId());
+            helper.deleteAppointment(details.getAppointmentId());
         }
         AppointmentDetails.appDetails.clear();
-        dbHelper.retrieveAppointmentDetails();
+        helper.retrieveAppointmentDetails();
         appointmentDetailsTable.setItems(AppointmentDetails.appDetails);
     }
     

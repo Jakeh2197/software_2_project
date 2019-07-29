@@ -27,21 +27,16 @@ import scheduler.model.upcomingAppointments;
  * @author Jake
  */
 public class dbHelper {     
-    
-        
-    private static String submittedUserName;
-    private static String submittedUserPassword;
+      
+    //this will be used to retrieve username whenver changes are made
     private static int databaseUserId;
-    private static int[] custId;   
+
   
     //variables for database connection
     private static Connection conn;
     private static Statement stmt;
     private static String dbUserName;
     private static String dbPassword;
-    private static boolean confirmation = false;
-    private static String databaseUserName = null;
-    private static String databaseUserPassword = null;
     
     //database driver and url
     private static String JDBC_DRIVER;
@@ -62,56 +57,73 @@ public class dbHelper {
         dbUserName = "U04Ftj";
         dbPassword = "53688224861";
     }
-    
-    public static boolean connect(String userName, String userPassword) throws ClassNotFoundException, SQLException, IOException {
+
+    public boolean connect(String userName, String userPassword) throws ClassNotFoundException, SQLException, IOException {
         
-        submittedUserName = userName;
-        submittedUserPassword = userPassword;
-               
+        boolean confirmation = false;
+
         //open connection to database
         try {
+            
+            String databaseUserName = null;
+            String databaseUserPassword;
+            
             Class.forName("com.mysql.jdbc.Driver");
-            dbHelper.conn = (Connection) DriverManager.getConnection(DB_URL, dbUserName, dbPassword);   
+            dbHelper.conn = (Connection) DriverManager.getConnection(DB_URL, dbUserName, dbPassword); 
+            
+            //use sql to retrieve username and password
+            try {
+
+                String sql = "SELECT userName, password, userId FROM user WHERE userName=?";
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ps.setString(1, userName);
+                ResultSet rs = ps.executeQuery();
+
+                //retrieve userName, password and ID from database
+                while(rs.next()) {
+                    databaseUserName = rs.getString("userName");
+                    databaseUserPassword = rs.getString("password");
+                    databaseUserId = rs.getInt("userId");
+
+                    //compare entered userName and password to database values
+                    if(databaseUserName.equals(userName) && databaseUserPassword.equals(userPassword)) {
+                        confirmation = true;
+                    }                             
+                }
+
+            } catch(SQLException e) {
+                e.printStackTrace();
+            }
+
+            if(confirmation == true) {
+
+                Timestamp timestamp = new Timestamp(System.currentTimeMillis());
+                String login = "User: " + databaseUserName + " logged in on: " + timestamp;
+                LogPrintWriter.writeLogin(login);
+
+            }
         } catch(ClassNotFoundException | SQLException e) {
             e.printStackTrace();
         }
-        
-        //use sql to retrieve username and password
-        try {
-            
-            String sql = "SELECT userName, password, userId FROM user WHERE userName=?";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, submittedUserName);
-            ResultSet rs = ps.executeQuery();
-            
-            //retrieve userName, password and ID from database
-            while(rs.next()) {
-                databaseUserName = rs.getString("userName");
-                databaseUserPassword = rs.getString("password");
-                databaseUserId = rs.getInt("userId");
-                       
-                //compare entered userName and password to database values
-                if(submittedUserName.equals(databaseUserName) && submittedUserPassword.equals(databaseUserPassword)) {
-                    confirmation = true;
-                }                             
-            }
 
-        } catch(SQLException e) {
-            e.printStackTrace();
-        }
-        
-        if(confirmation == true) {
-            
-            Timestamp timestamp = new Timestamp(System.currentTimeMillis());
-            String login = "User: " + databaseUserName + " logged in on: " + timestamp;
-            LogPrintWriter.writeLogin(login);
-
-        }
         return confirmation;
-        
+          
+    }
+    
+    private String retrieveUserName(int userId) throws SQLException {
+        //retrieve user name of person making change
+        String selectUserName = "SELECT userName FROM user WHERE userID=?";
+        PreparedStatement prepstate = conn.prepareStatement(selectUserName);
+        prepstate.setString(1, Integer.toString(databaseUserId));
+        String userName = null;
+        ResultSet result = prepstate.executeQuery();
+        while(result.next()) {
+            userName = result.getString("userName");
+        }
+        return userName;
     }
         
-    public static void retrieveUpcomingAppointments() throws ClassNotFoundException, SQLException {
+    public  void retrieveUpcomingAppointments() throws ClassNotFoundException, SQLException {
         
         //variables used in upcomingAppointmentsTable
         int customerId = 0;
@@ -150,7 +162,7 @@ public class dbHelper {
         } 
     }
     
-    public static void retrieveCustomerDetails() throws ClassNotFoundException {
+    public  void retrieveCustomerDetails() throws ClassNotFoundException {
                 
         String customerName;
         String address = null;
@@ -178,7 +190,7 @@ public class dbHelper {
         }
     }
     
-    public static void retrieveEmployeeDetails() throws SQLException {
+    public  void retrieveEmployeeDetails() throws SQLException {
         
         String employeeName;
         
@@ -191,8 +203,10 @@ public class dbHelper {
         }
     }
     
-    public static void addCustomer(int cityId, String addressOne, 
-            String addressTwo,String postalCode, String phone, String customerName) throws IOException {
+    public  void addCustomer(int cityId, String addressOne, 
+            String addressTwo,String postalCode, String phone, String customerName) throws IOException, SQLException {
+        
+        String userName = this.retrieveUserName(databaseUserId);
 
         try {
 
@@ -220,18 +234,18 @@ public class dbHelper {
             ps1.setString(1, customerName);
             ps1.setString(2, addressId);
             ps1.setString(3, Integer.toString(0));
-            ps1.setString(4, databaseUserName);
-            ps1.setString(5, databaseUserName);
+            ps1.setString(4, userName);
+            ps1.setString(5, userName);
             ps1.execute();
             
         } catch(SQLException e) {
             
         }
-        String change = databaseUserName + " added new customer: " + customerName;
+        String change = userName + " added new customer: " + customerName;
         LogPrintWriter.writeChangeLog(change);
     }
     
-    public static void retrieveAppointmentDetails() {
+    public  void retrieveAppointmentDetails() {
         //variables used in appointment details table
         String customerName;
         String employeeName;
@@ -275,18 +289,23 @@ public class dbHelper {
         
     }
     
-    public static void deleteCustomer(String customerName) throws SQLException, IOException {
+    public  void deleteCustomer(String customerName) throws SQLException, IOException {
+        
+        String userName = this.retrieveUserName(databaseUserId);
+        
         String sql = "UPDATE customer SET active = 1 WHERE customerName = ?";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setString(1, customerName);
         ps.executeUpdate();
         
-        String change = databaseUserName + " deleted customer: " + customerName;
+        String change = userName + " deleted customer: " + customerName;
         LogPrintWriter.writeChangeLog(change);
     }
     
-    public static void addAppointment(String customerName, String employeeName, String title, String description, String location, String contact, String type, LocalDate date, LocalTime startTime, LocalTime endTime) throws SQLException, DateTimeParseException {
+    public  void addAppointment(String customerName, String employeeName, String title, String description, String location, String contact, String type, LocalDate date, LocalTime startTime, LocalTime endTime) throws SQLException, DateTimeParseException {
                 
+        String userName = this.retrieveUserName(databaseUserId);
+        
         int customerId;
         int userId;
         String start = date + " " + startTime.toString();
@@ -317,21 +336,24 @@ public class dbHelper {
                 ps2.setString(8, "");
                 ps2.setString(9, start);
                 ps2.setString(10, end);
-                ps2.setString(11, databaseUserName);
-                ps2.setString(12, databaseUserName);
+                ps2.setString(11, userName);
+                ps2.setString(12, userName);
                 ps2.executeUpdate();
             }
         }
   
     }
     
-    public static void deleteAppointment(int appointmentId) throws SQLException, IOException {
+    public  void deleteAppointment(int appointmentId) throws SQLException, IOException {
+        
+        String userName = this.retrieveUserName(databaseUserId);
+        
         String sql = "DELETE FROM appointment WHERE appointmentid=?";
         PreparedStatement ps = conn.prepareStatement(sql);
         ps.setString(1, Integer.toString(appointmentId));
         ps.execute();
         
-        String change = databaseUserName + " deleted appointment: " + appointmentId;
+        String change = userName + " deleted appointment: " + appointmentId;
         LogPrintWriter.writeChangeLog(change);
     }   
     
@@ -339,7 +361,12 @@ public class dbHelper {
         return databaseUserId;
     }
         
-    public static void setUserId(int aUserId) {
+    public  void setUserId(int aUserId) {
         databaseUserId = aUserId;
+    }
+    
+    public void closeConnection() throws SQLException {
+        conn.close();
+        stmt.close();
     }
 }

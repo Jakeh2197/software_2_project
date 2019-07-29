@@ -7,6 +7,7 @@ package scheduler.view.controller;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -25,6 +26,7 @@ import scheduler.model.AppointmentDetails;
 import scheduler.model.CustomerDetail;
 import scheduler.model.upcomingAppointments;
 import scheduler.model.upcomingAppointments.App;
+import static scheduler.view.controller.LoginScreenController.helper;
 
 /**
  * FXML Controller class
@@ -69,9 +71,10 @@ public class MainScreenController implements Initializable {
     }    
     
     @FXML
-    private void logoutButtonHandler(ActionEvent event) throws IOException {
+    private void logoutButtonHandler(ActionEvent event) throws IOException, SQLException {
         
         upcomingAppointmentsTable.getItems().clear();
+        helper.closeConnection();
         
         Parent root = FXMLLoader.load(getClass().
                 getResource("../LoginScreen.fxml")); 
@@ -89,7 +92,7 @@ public class MainScreenController implements Initializable {
     @FXML
     private void customersButtonHandler(ActionEvent event) throws IOException, ClassNotFoundException {
         
-        dbHelper.retrieveCustomerDetails();
+        helper.retrieveCustomerDetails();
         
         Parent root = FXMLLoader.load(getClass().
                 getResource("../CustomersScreen.fxml")); 
@@ -113,7 +116,7 @@ public class MainScreenController implements Initializable {
     @FXML
     private void appointmentsButtonHandler(ActionEvent event) throws IOException {
         
-        dbHelper.retrieveAppointmentDetails();
+        helper.retrieveAppointmentDetails();
         
         Parent root = FXMLLoader.load(getClass().
                 getResource("../AppointmentsScreen.fxml")); 
