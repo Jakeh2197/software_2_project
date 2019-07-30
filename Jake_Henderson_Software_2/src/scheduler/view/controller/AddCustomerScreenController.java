@@ -12,6 +12,7 @@ import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
@@ -60,7 +61,7 @@ public class AddCustomerScreenController implements Initializable {
     
     @FXML
     private void addCustomerButtonHandler(ActionEvent event) throws IOException, SQLException {
-        
+               
         //varriables used to create new customer
         String customerName = customerNameTextField.getText();
         String addressOne = addressOneTextField.getText();
@@ -68,9 +69,8 @@ public class AddCustomerScreenController implements Initializable {
         String postalCode = postalCodeTextField.getText();
         String phoneNumber = phoneNumberTextField.getText();
         String city = cityTextField.getText();
-        
-        helper.addCustomer(29, addressOne, addressTwo, postalCode, phoneNumber, customerName);
-        
+
+        helper.addCustomer(city, addressOne, addressTwo, postalCode, phoneNumber, customerName);
 
     }
     

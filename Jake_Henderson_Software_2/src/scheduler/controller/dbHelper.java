@@ -16,6 +16,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
+import javafx.scene.control.Alert;
 import scheduler.model.AppointmentDetails;
 import scheduler.model.CustomerDetail;
 import scheduler.model.EmployeeDetails;
@@ -202,46 +203,63 @@ public class dbHelper {
         }
     }
     
-    public  void addCustomer(int cityId, String addressOne, 
+    public  void addCustomer(String city, String addressOne, 
             String addressTwo,String postalCode, String phone, String customerName) throws IOException, SQLException {
         
         String userName = this.retrieveUserName(databaseUserId);
-
-        try {
-
-            //insert customer data into address table
-            String address = "INSERT INTO address (address, address2, cityId, postalCode, phone, createDate, createdBy, lastUpdate, lastUpdateBy) VALUES (?, ?, ?, ?, ?, now(), ?, now(), ?)";
-            PreparedStatement ps = conn.prepareStatement(address);
-            ps.setString(1, addressOne);
-            ps.setString(2, addressTwo);
-            ps.setString(3, Integer.toString(cityId));
-            ps.setString(4, postalCode);
-            ps.setString(5, phone);
-            ps.setString(6, "test");
-            ps.setString(7, "test");
-            ps.execute();
-                        
-            //retrieve addressId from inserted row for use in customer table
-            ps = conn.prepareStatement("SELECT LAST_INSERT_ID() FROM address");
-            ResultSet rs = ps.executeQuery();
-            rs.next();
-            String addressId = rs.getString(1);
-                        
-            //insert customer data into customer table
-            String customer = "INSERT INTO customer(customerName, addressId, active, createDate, createdBy, lastUpdate, lastUpdateby) VALUES (?, ?, ?, now(), ?, now(), ?)";
-            PreparedStatement ps1 = conn.prepareStatement(customer);
-            ps1.setString(1, customerName);
-            ps1.setString(2, addressId);
-            ps1.setString(3, Integer.toString(0));
-            ps1.setString(4, userName);
-            ps1.setString(5, userName);
-            ps1.execute();
+        
+        String checkForCustomer = "SELECT customerName FROM customer WHERE customerName=?";
+        PreparedStatement sql = conn.prepareStatement(checkForCustomer);
+        sql.setString(1, customerName);
+        ResultSet check = sql.executeQuery();
+        if(check.next() == false) {
             
-        } catch(SQLException e) {
+            try {
+
+                //insert customer data into address table
+                String address = "INSERT INTO address (address, address2, cityId, postalCode, phone, createDate, createdBy, lastUpdate, lastUpdateBy) VALUES (?, ?, ?, ?, ?, now(), ?, now(), ?)";
+                PreparedStatement ps = conn.prepareStatement(address);
+                ps.setString(1, addressOne);
+                ps.setString(2, addressTwo);
+                ps.setString(3, city);
+                ps.setString(4, postalCode);
+                ps.setString(5, phone);
+                ps.setString(6, "test");
+                ps.setString(7, "test");
+                ps.execute();
+
+                //retrieve addressId from inserted row for use in customer table
+                ps = conn.prepareStatement("SELECT LAST_INSERT_ID() FROM address");
+                ResultSet rs = ps.executeQuery();
+                rs.next();
+                String addressId = rs.getString(1);
+
+                //insert customer data into customer table
+                String customer = "INSERT INTO customer(customerName, addressId, active, createDate, createdBy, lastUpdate, lastUpdateby) VALUES (?, ?, ?, now(), ?, now(), ?)";
+                PreparedStatement ps1 = conn.prepareStatement(customer);
+                ps1.setString(1, customerName);
+                ps1.setString(2, addressId);
+                ps1.setString(3, Integer.toString(0));
+                ps1.setString(4, userName);
+                ps1.setString(5, userName);
+                ps1.execute();
             
+            } catch(SQLException e) {
+
+            }
+            String change = userName + " added new customer: " + customerName;
+            LogPrintWriter.writeChangeLog(change);
         }
-        String change = userName + " added new customer: " + customerName;
-        LogPrintWriter.writeChangeLog(change);
+        else {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Customer Already exists");
+            alert.setHeaderText("Error!");
+            alert.setContentText("Customer already exists, please select Update Customer option on previous screen");
+            alert.showAndWait();
+        }
+
+
+        
     }
     
     public  void retrieveAppointmentDetails() {

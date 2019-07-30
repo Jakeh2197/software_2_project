@@ -41,6 +41,12 @@ public class LoginScreenController implements Initializable {
     private Button loginButton;
     
     public static dbHelper helper;
+    
+    public Location newYork;
+    public Location phoenix;
+    public Location london;
+    public Location userLocation;
+    
         
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -72,16 +78,16 @@ public class LoginScreenController implements Initializable {
                 upcomingAppointments apps = new upcomingAppointments();
                 
                 //create location object for each of the locations
-                Location newYork = new Location("New York", "America/New_York");
-                Location phoenix = new Location("Phoenix", "America/Phoenix");
-                Location london = new Location("London", "Europe/London");
+                newYork = new Location("New York", "America/New_York");
+                phoenix = new Location("Phoenix", "America/Phoenix");
+                london = new Location("London", "Europe/London");
                 
                 //retrieve user location time zone
                 Calendar user = Calendar.getInstance();
                 TimeZone userTimeZone = user.getTimeZone();
                 
                 //create location for where the user is located
-                Location userLocation = new Location("User Location", userTimeZone.getID());
+                userLocation = new Location("User Location", userTimeZone.getID());
                 
                 try {
                     helper.retrieveUpcomingAppointments();
