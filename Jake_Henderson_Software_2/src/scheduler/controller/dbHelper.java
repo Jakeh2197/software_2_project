@@ -112,6 +112,10 @@ public class dbHelper {
     
     private String retrieveUserName(int userId) throws SQLException {
         //retrieve user name of person making change
+        /*this function is used to retrieve the username of the person signed in 
+            and making changes to the database in order to log that users information
+            for future reference
+        */
         String selectUserName = "SELECT userName FROM user WHERE userID=?";
         PreparedStatement prepstate = conn.prepareStatement(selectUserName);
         prepstate.setString(1, Integer.toString(databaseUserId));
@@ -123,7 +127,7 @@ public class dbHelper {
         return userName;
     }
         
-    public  void retrieveUpcomingAppointments() throws ClassNotFoundException, SQLException {
+    public void retrieveUpcomingAppointments() throws ClassNotFoundException, SQLException {
         
         //variables used in upcomingAppointmentsTable
         int customerId;
@@ -162,7 +166,7 @@ public class dbHelper {
         } 
     }
     
-    public  void retrieveCustomerDetails() throws ClassNotFoundException {
+    public void retrieveCustomerDetails() throws ClassNotFoundException {
                 
         String customerName;
         String address = null;
@@ -190,7 +194,7 @@ public class dbHelper {
         }
     }
     
-    public  void retrieveEmployeeDetails() throws SQLException {
+    public void retrieveEmployeeDetails() throws SQLException {
         
         String employeeName;
         
@@ -203,30 +207,85 @@ public class dbHelper {
         }
     }
     
-    public  void addCustomer(String city, String addressOne, 
-            String addressTwo,String postalCode, String phone, String customerName) throws IOException, SQLException {
+    public void addCustomer(String city, String addressOne, 
+            String addressTwo,String postalCode, String phone, String customerName, String country) throws IOException, SQLException {
         
         String userName = this.retrieveUserName(databaseUserId);
         
+        //check if the country has already been added, add if not present
+        int countryId = 0;
+        String countryCheck = "SELECT country, countryid FROM country WHERE country=?";
+        PreparedStatement ps2 = conn.prepareStatement(countryCheck);
+        ps2.setString(1, country);
+        ResultSet rs1 = ps2.executeQuery();
+        if(rs1.next() == false) {
+            String countryInsert = "INSERT INTO country (country, createDate, createdBy, lastUpdate, lastUpdateBy) VALUES (?, now(), ?, now(), ?)";
+            PreparedStatement ps3 = conn.prepareStatement(countryInsert, Statement.RETURN_GENERATED_KEYS);
+            ps3.setString(1, country);
+            ps3.setString(2, userName);
+            ps3.setString(3, userName);
+            ps3.executeUpdate();
+            
+            ResultSet generatedKeys = ps3.getGeneratedKeys();
+            while(generatedKeys.next()) {
+                countryId = generatedKeys.getInt(1);
+            }
+        } else {
+            countryId = rs1.getInt("countryid");
+        }
+        
+        //check if the city has already been added, add if not present
+        int cityId = 0;
+        String cityCheck = "SELECT city, cityid FROM city WHERE city=?";
+        PreparedStatement ps4 = conn.prepareStatement(cityCheck);
+        ps4.setString(1, city);
+        ResultSet rs2 = ps4.executeQuery();
+        if(rs2.next() == false) {
+            String cityInsert = "INSERT INTO city (city, countryId, createDate, createdBy, lastUpdate, lastUpdateBy) VALUES (?, ?, now(), ?, now(), ?)";
+            PreparedStatement ps5 = conn.prepareStatement(cityInsert, Statement.RETURN_GENERATED_KEYS);
+            ps5.setString(1, city);
+            ps5.setString(2, Integer.toString(countryId));
+            ps5.setString(3, userName);
+            ps5.setString(4, userName);
+            ps5.executeUpdate();
+            
+            ResultSet generatedKeys = ps5.getGeneratedKeys();
+            while(generatedKeys.next()) {
+                cityId = generatedKeys.getInt(1);
+            }
+            
+        } else {
+            cityId = rs2.getInt("cityid");
+        }
+        
+        /*
+            search to see if customer information is already in database
+            using customername and address
+        */
         String checkForCustomer = "SELECT customerName FROM customer WHERE customerName=?";
         PreparedStatement sql = conn.prepareStatement(checkForCustomer);
         sql.setString(1, customerName);
-        ResultSet check = sql.executeQuery();
-        if(check.next() == false) {
+        ResultSet nameCheck = sql.executeQuery();
+        
+        String checkForAddress = "SELECT address FROM address WHERE address=?";
+        PreparedStatement sql1 = conn.prepareStatement(checkForAddress);
+        sql1.setString(1, addressOne);
+        ResultSet addressCheck = sql1.executeQuery();
+        if(nameCheck.next() == false & addressCheck.next() == false) {
             
             try {
-
                 //insert customer data into address table
                 String address = "INSERT INTO address (address, address2, cityId, postalCode, phone, createDate, createdBy, lastUpdate, lastUpdateBy) VALUES (?, ?, ?, ?, ?, now(), ?, now(), ?)";
                 PreparedStatement ps = conn.prepareStatement(address);
                 ps.setString(1, addressOne);
                 ps.setString(2, addressTwo);
-                ps.setString(3, city);
+                ps.setString(3, Integer.toString(cityId));
                 ps.setString(4, postalCode);
                 ps.setString(5, phone);
-                ps.setString(6, "test");
-                ps.setString(7, "test");
+                ps.setString(6, userName);
+                ps.setString(7, userName);
                 ps.execute();
+
 
                 //retrieve addressId from inserted row for use in customer table
                 ps = conn.prepareStatement("SELECT LAST_INSERT_ID() FROM address");
@@ -262,7 +321,7 @@ public class dbHelper {
         
     }
     
-    public  void retrieveAppointmentDetails() {
+    public void retrieveAppointmentDetails() {
         //variables used in appointment details table
         String customerName;
         String employeeName;
@@ -306,7 +365,7 @@ public class dbHelper {
         
     }
     
-    public  void deleteCustomer(String customerName) throws SQLException, IOException {
+    public void deleteCustomer(String customerName) throws SQLException, IOException {
         
         String userName = this.retrieveUserName(databaseUserId);
         
@@ -319,7 +378,7 @@ public class dbHelper {
         LogPrintWriter.writeChangeLog(change);
     }
     
-    public  void addAppointment(String customerName, String employeeName, String title, String description, String location, String contact, String type, LocalDate date, LocalTime startTime, LocalTime endTime) throws SQLException, DateTimeParseException {
+    public void addAppointment(String customerName, String employeeName, String title, String description, String location, String contact, String type, LocalDate date, LocalTime startTime, LocalTime endTime) throws SQLException, DateTimeParseException {
                 
         String userName = this.retrieveUserName(databaseUserId);
         
@@ -361,7 +420,7 @@ public class dbHelper {
   
     }
     
-    public  void deleteAppointment(int appointmentId) throws SQLException, IOException {
+    public void deleteAppointment(int appointmentId) throws SQLException, IOException {
         
         String userName = this.retrieveUserName(databaseUserId);
         

@@ -69,8 +69,9 @@ public class AddCustomerScreenController implements Initializable {
         String postalCode = postalCodeTextField.getText();
         String phoneNumber = phoneNumberTextField.getText();
         String city = cityTextField.getText();
+        String country = countryTextField.getText();
 
-        helper.addCustomer(city, addressOne, addressTwo, postalCode, phoneNumber, customerName);
+        helper.addCustomer(city, addressOne, addressTwo, postalCode, phoneNumber, customerName, country);
 
     }
     
