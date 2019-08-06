@@ -20,7 +20,6 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
-import scheduler.controller.dbHelper;
 import scheduler.model.CustomerDetail;
 import scheduler.model.CustomerDetail.Details;
 import static scheduler.view.controller.LoginScreenController.helper;

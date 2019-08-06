@@ -1,0 +1,2 @@
+test deleted customer: Sarah Doud
+test deleted appointment: 76

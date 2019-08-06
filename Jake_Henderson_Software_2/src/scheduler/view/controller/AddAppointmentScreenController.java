@@ -11,6 +11,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -22,7 +24,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
-import scheduler.controller.dbHelper;
+import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import scheduler.model.CustomerDetail;
 import scheduler.model.CustomerDetail.Details;
 import scheduler.model.EmployeeDetails;
@@ -64,6 +67,8 @@ public class AddAppointmentScreenController implements Initializable {
     private ChoiceBox startTimeChoiceBox;
     @FXML
     private ChoiceBox endTimeChoiceBox;
+    
+    
 
     /**
      * Initializes the controller class.
@@ -96,6 +101,7 @@ public class AddAppointmentScreenController implements Initializable {
         employeeTable.setItems(EmployeeDetails.employeeNames);
         employeesColumn.setCellValueFactory(new PropertyValueFactory("name"));
         employeeTable.getColumns().setAll(employeesColumn);
+        
         
     }    
 
@@ -131,7 +137,7 @@ public class AddAppointmentScreenController implements Initializable {
             Details customer = null; 
             String customerName = null;
             try {
-                customerTable.getSelectionModel().getSelectedItem();
+                customer = customerTable.getSelectionModel().getSelectedItem();
                 customerName = customer.getCustomerName();
             } catch(NullPointerException e) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -144,7 +150,7 @@ public class AddAppointmentScreenController implements Initializable {
             EmployeeName employee = null;
             String employeeName = null;
             try {
-                employeeTable.getSelectionModel().getSelectedItem();
+                employee = employeeTable.getSelectionModel().getSelectedItem();
                 employeeName = employee.getName();
             } catch(NullPointerException e) {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
