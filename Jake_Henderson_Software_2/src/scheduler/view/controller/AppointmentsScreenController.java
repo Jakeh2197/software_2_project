@@ -20,9 +20,12 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import scheduler.controller.dbHelper;
 import scheduler.model.AppointmentDetails;
 import scheduler.model.AppointmentDetails.AppDetails;
+import scheduler.model.CustomerDetail;
+import scheduler.model.EmployeeDetails;
 import static scheduler.view.controller.LoginScreenController.helper;
 
 /**
@@ -78,7 +81,13 @@ public class AppointmentsScreenController implements Initializable {
         Stage stage = new Stage();
         stage.setTitle("Scheduler");
         stage.setScene(scene);
-        stage.showAndWait();
+        stage.show();
+        
+        stage.setOnCloseRequest((WindowEvent e) -> {
+            CustomerDetail.customerDetails.clear();
+            EmployeeDetails.employeeNames.clear();
+        });
+        
         
     }
 
@@ -102,5 +111,5 @@ public class AppointmentsScreenController implements Initializable {
         helper.retrieveAppointmentDetails();
         appointmentDetailsTable.setItems(AppointmentDetails.appDetails);
     }
-    
+        
 }

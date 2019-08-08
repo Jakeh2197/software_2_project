@@ -19,6 +19,7 @@ import java.time.format.DateTimeParseException;
 import javafx.scene.control.Alert;
 import scheduler.model.AppointmentDetails;
 import scheduler.model.CustomerDetail;
+import scheduler.model.DaysOpen;
 import scheduler.model.EmployeeDetails;
 import scheduler.model.LogPrintWriter;
 import scheduler.model.upcomingAppointments;
@@ -380,6 +381,12 @@ public class dbHelper {
                 
         String userName = this.retrieveUserName(databaseUserId);
         
+        for(DaysOpen d : DaysOpen.values()) {
+            if(d.name().equals(date.getDayOfWeek().name())) {
+                System.out.println(d);
+            }
+        }
+                
         int customerId;
         int userId;
         String start = date + " " + startTime.toString();

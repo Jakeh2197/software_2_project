@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -125,6 +127,11 @@ public class MainScreenController implements Initializable {
         stage.setTitle("Scheduler");
         stage.setScene(scene);
         stage.show();
+        
+        stage.setOnCloseRequest((WindowEvent e) -> {
+            upcomingAppointments.appointments.clear();
+            
+        });
         
         /*
             This lambda expression allows me to easily clear the appointment table

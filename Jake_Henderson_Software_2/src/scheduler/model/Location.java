@@ -13,10 +13,10 @@ import java.time.LocalTime;
  */
 public class Location {
     
-    //days the locations are open
-    public static enum DAYSOPEN {
-        MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY
-    }
+//    //days the locations are open
+//    public static enum DAYSOPEN {
+//        MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY
+//    }
     
     //hours the locations are open
     public static LocalTime open = LocalTime.of(8, 0);
