@@ -126,7 +126,22 @@ public class AddAppointmentScreenController implements Initializable {
         String adjustedStartTime = null;
         String endTime = null;
         String adjustedEndTime = null;
-        
+        DateFormat dtf = new SimpleDateFormat("yyyy-mm-dd hh:mm a");
+        DateFormat output = new SimpleDateFormat("yyyy-mm-dd HH:mm");
+        String open = appDate + " 9:00 AM";
+        String close = appDate + " 5:00 PM";
+        Date openTime = null;
+        Date closeTime = null;
+        try {
+            openTime = dtf.parse(open);
+            closeTime = dtf.parse(close);
+        } catch(ParseException e) {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Invalid date format");
+            alert.setHeaderText("Error!");
+            alert.setContentText("Please ensure data in date field uses the following format: YYYY-MM-DD");
+            alert.showAndWait();
+        }      
         
         if (location.trim().isEmpty() ||
                title.trim().isEmpty() ||
@@ -150,37 +165,91 @@ public class AddAppointmentScreenController implements Initializable {
             if(startTimeToggle.getSelectedToggle() == startTimeAmButton) {
                 Date startDate = null;
                 startTime = appDate + " " + start + " AM";
-                DateFormat dtf = new SimpleDateFormat("yyyy-mm-dd hh:mm a");
-                DateFormat output = new SimpleDateFormat("yyyy-mm-dd HH:mm");
-                startDate = dtf.parse(startTime);
-                adjustedStartTime = output.format(startDate);
-                System.out.println(adjustedStartTime);
+                try {
+                    startDate = dtf.parse(startTime);
+                } catch(ParseException e) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Date or Time format error");
+                    alert.setHeaderText("Error!");
+                    alert.setContentText("No valid date or time entered. Please verify data being entered is correct");
+                    alert.showAndWait();
+                }
+                if (startDate.before(openTime)) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Appointment start time error");
+                    alert.setHeaderText("Error!");
+                    alert.setContentText("Start time for appointments must not be before 9:00 AM");
+                    alert.showAndWait();
+                } else {
+                    adjustedStartTime = output.format(startDate);
+                }
             } else if(startTimeToggle.getSelectedToggle() == startTimePmButton) {
                 Date endDate = null;
                 endTime = appDate + " " + start + " PM";
-                DateFormat dtf = new SimpleDateFormat("yyyy-mm-dd hh:mm aa");
-                DateFormat output = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
-                endDate = dtf.parse(endTime);
-                adjustedEndTime = output.format(endDate);
-                System.out.println(adjustedEndTime);
+                try {
+                    endDate = dtf.parse(endTime);
+                } catch(ParseException e) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Date or Time format error");
+                    alert.setHeaderText("Error!");
+                    alert.setContentText("No valid date or time entered. Please verify data being entered is correct");
+                    alert.showAndWait();
+                }
+                if(endDate.after(closeTime)) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Appointment start time error");
+                    alert.setHeaderText("Error!");
+                    alert.setContentText("Start time for appointments must not be after 5:00 PM");
+                    alert.showAndWait();
+            alert.showAndWait();
+                } else {
+                    adjustedEndTime = output.format(endDate);
+                }
             }
             
             if(endTimeToggle.getSelectedToggle() == endTimeAmButton) {
-                Date startDate = null;
-                startTime = appDate + " " + start + " AM";
-                DateFormat dtf = new SimpleDateFormat("yyyy-mm-dd hh:mm a");
-                DateFormat output = new SimpleDateFormat("yyyy-mm-dd HH:mm");
-                startDate = dtf.parse(startTime);
-                adjustedStartTime = output.format(startDate);
-                System.out.println(adjustedStartTime);
+                Date endDate = null;
+                endTime = appDate + " " + end + " AM";
+                try {
+                    endDate = dtf.parse(endTime);
+                } catch(ParseException e) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Date or Time format error");
+                    alert.setHeaderText("Error!");
+                    alert.setContentText("No valid date or time entered. Please verify data being entered is correct");
+                    alert.showAndWait();
+                }
+                if(endDate.before(openTime)) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Appointment end time error");
+                    alert.setHeaderText("Error!");
+                    alert.setContentText("End time for appointments must not be before 9:00 AM");
+                    alert.showAndWait();
+                } else {
+                    adjustedStartTime = output.format(endDate);
+                }
             } else if(endTimeToggle.getSelectedToggle() == endTimePmButton) {
                 Date endDate = null;
                 endTime = appDate + " " + end + " PM";
-                DateFormat dtf = new SimpleDateFormat("yyyy-mm-dd hh:mm aa");
-                DateFormat output = new SimpleDateFormat("yyyy-mm-dd HH:mm:ss");
-                endDate = dtf.parse(endTime);
-                adjustedEndTime = output.format(endDate);
-                System.out.println(adjustedEndTime);
+                try {
+                    endDate = dtf.parse(endTime);
+                } catch(ParseException e) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Date or Time format error");
+                    alert.setHeaderText("Error!");
+                    alert.setContentText("No valid date or time entered. Please verify data being entered is correct");
+                    alert.showAndWait();
+                }
+                if(endDate.after(closeTime)) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setTitle("Appointment end time error");
+                    alert.setHeaderText("Error!");
+                    alert.setContentText("end time for appointments must not be after 5:00 PM");
+                    alert.showAndWait();
+                } else {
+                    adjustedEndTime = output.format(endDate);
+                }
+
             }
                         
             try {
@@ -212,13 +281,9 @@ public class AddAppointmentScreenController implements Initializable {
 
             try {
                 helper.addAppointment(customerName, employeeName, title, description, location, contact, type, adjustedStartTime, adjustedEndTime);
-            } catch(DateTimeParseException e) {
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                alert.setTitle("Improper format entered for Date field");
-                alert.setHeaderText("Error!");
-                alert.setContentText("Please ensure the date you have entered matches the following format: YYYY-MM-DD");
-                alert.showAndWait();
-            }
+            } catch(NullPointerException e) {
+                
+            } 
         }
       
     }

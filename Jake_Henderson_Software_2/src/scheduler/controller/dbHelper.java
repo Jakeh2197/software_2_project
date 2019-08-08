@@ -409,8 +409,8 @@ public class dbHelper {
                 ps2.setString(6, contact);
                 ps2.setString(7, type);
                 ps2.setString(8, "");
-                ps2.setString(9, startDate.toString());
-                ps2.setString(10, endDate.toString());
+                ps2.setString(9, startDate);
+                ps2.setString(10, endDate);
                 ps2.setString(11, userName);
                 ps2.setString(12, userName);
                 ps2.executeUpdate();

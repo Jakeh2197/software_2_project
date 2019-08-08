@@ -1,0 +1,6 @@
+test deleted appointment: 89
+test deleted appointment: 88
+test deleted appointment: 86
+test deleted appointment: 85
+test deleted appointment: 84
+test deleted appointment: 87
