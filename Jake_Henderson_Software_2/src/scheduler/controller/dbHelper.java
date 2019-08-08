@@ -316,8 +316,6 @@ public class dbHelper {
             alert.setContentText("Customer already exists, please select Update Customer option on previous screen");
             alert.showAndWait();
         }
-
-
         
     }
     
