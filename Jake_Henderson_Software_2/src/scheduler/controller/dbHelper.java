@@ -16,6 +16,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeParseException;
+import java.util.Date;
 import javafx.scene.control.Alert;
 import scheduler.model.AppointmentDetails;
 import scheduler.model.CustomerDetail;
@@ -377,20 +378,13 @@ public class dbHelper {
         LogPrintWriter.writeChangeLog(change);
     }
     
-    public void addAppointment(String customerName, String employeeName, String title, String description, String location, String contact, String type, LocalDate date, LocalTime startTime, LocalTime endTime) throws SQLException, DateTimeParseException {
+    public void addAppointment(String customerName, String employeeName, String title, String description, String location, String contact, String type, String startDate,  String endDate) throws SQLException, DateTimeParseException {
                 
         String userName = this.retrieveUserName(databaseUserId);
         
-        for(DaysOpen d : DaysOpen.values()) {
-            if(d.name().equals(date.getDayOfWeek().name())) {
-                System.out.println(d);
-            }
-        }
                 
         int customerId;
         int userId;
-        String start = date + " " + startTime.toString();
-        String end = date + " " + endTime.toString();
 
         String selectCustomerId = "SELECT customerid FROM customer WHERE customerName=?";
         PreparedStatement ps = conn.prepareStatement(selectCustomerId);
@@ -415,8 +409,8 @@ public class dbHelper {
                 ps2.setString(6, contact);
                 ps2.setString(7, type);
                 ps2.setString(8, "");
-                ps2.setString(9, start);
-                ps2.setString(10, end);
+                ps2.setString(9, startDate.toString());
+                ps2.setString(10, endDate.toString());
                 ps2.setString(11, userName);
                 ps2.setString(12, userName);
                 ps2.executeUpdate();
