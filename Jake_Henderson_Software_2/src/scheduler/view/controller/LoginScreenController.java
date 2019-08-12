@@ -23,7 +23,6 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import scheduler.controller.*;
-import scheduler.model.Location;
 import scheduler.model.upcomingAppointments;
 //import scheduler.model.Appointments;
 /**
@@ -41,12 +40,7 @@ public class LoginScreenController implements Initializable {
     private Button loginButton;
     
     public static dbHelper helper;
-    
-    public Location newYork;
-    public Location phoenix;
-    public Location london;
-    public Location userLocation;
-    
+    public static TimeZone timeZone = TimeZone.getDefault();
         
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -76,19 +70,7 @@ public class LoginScreenController implements Initializable {
             if(helper.connect(userName, userPassword)) {
                 
                 upcomingAppointments apps = new upcomingAppointments();
-                
-                //create location object for each of the locations
-                newYork = new Location("New York", "America/New_York");
-                phoenix = new Location("Phoenix", "America/Phoenix");
-                london = new Location("London", "Europe/London");
-                
-                //retrieve user location time zone
-                Calendar user = Calendar.getInstance();
-                TimeZone userTimeZone = user.getTimeZone();
-                
-                //create location for where the user is located
-                userLocation = new Location("User Location", userTimeZone.getID());
-                
+                              
                 try {
                     helper.retrieveUpcomingAppointments();
                 } catch (ClassNotFoundException ex) {
