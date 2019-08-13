@@ -10,8 +10,6 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -24,7 +22,6 @@ import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.WindowEvent;
-import scheduler.controller.dbHelper;
 import scheduler.model.AppointmentDetails;
 import scheduler.model.CustomerDetail;
 import scheduler.model.upcomingAppointments;
@@ -54,6 +51,10 @@ public class MainScreenController implements Initializable {
     private Button customersButton;
     @FXML
     private Button appointmentsButton;
+    @FXML
+    private Button monthlySchedulesButton;
+    @FXML
+    private Button weeklySchedulesButton;
     
     /**
      * Initializes the controller class.
@@ -75,7 +76,7 @@ public class MainScreenController implements Initializable {
     
     @FXML
     private void logoutButtonHandler(ActionEvent event) throws IOException, SQLException {
-        
+                
         upcomingAppointmentsTable.getItems().clear();
         helper.closeConnection();
         
@@ -142,6 +143,22 @@ public class MainScreenController implements Initializable {
         stage.setOnCloseRequest((WindowEvent we) -> {
             AppointmentDetails.appDetails.clear();
         });
+        
+    }
+    
+    @FXML
+    private void monthlySchedulesButtonHandler(ActionEvent event) throws IOException {
+        Parent root = FXMLLoader.load(getClass().
+                getResource("../MonthlySchedules.fxml")); 
+        Scene scene = new Scene(root);
+        Stage stage = new Stage();
+        stage.setTitle("Scheduler");
+        stage.setScene(scene);
+        stage.show();
+    }
+    
+    @FXML
+    private void weeklySchedulesButtonHandler(ActionEvent event) {
         
     }
 

@@ -9,6 +9,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -20,6 +22,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 import scheduler.model.CustomerDetail;
 import scheduler.model.CustomerDetail.Details;
 import static scheduler.view.controller.LoginScreenController.helper;
@@ -68,6 +71,15 @@ public class CustomersScreenController implements Initializable {
         stage.setTitle("Scheduler");
         stage.setScene(scene);
         stage.show();
+        
+        stage.setOnCloseRequest((WindowEvent we) -> {
+            CustomerDetail.customerDetails.clear();
+            try {
+                helper.retrieveCustomerDetails();
+            } catch (ClassNotFoundException ex) {
+                
+            }
+        });
         
     }
 

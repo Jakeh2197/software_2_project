@@ -10,6 +10,8 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -86,6 +88,12 @@ public class AppointmentsScreenController implements Initializable {
         stage.setOnCloseRequest((WindowEvent e) -> {
             CustomerDetail.customerDetails.clear();
             EmployeeDetails.employeeNames.clear();
+            AppointmentDetails.appDetails.clear();
+            try {
+                helper.retrieveAppointmentDetails();
+            } catch (ParseException ex) {
+                
+            }
         });
         
         

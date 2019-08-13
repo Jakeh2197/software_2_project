@@ -1,0 +1,7 @@
+test deleted appointment: 98
+test deleted appointment: 97
+test deleted appointment: 99
+test deleted appointment: 96
+test added new customer: Lilith Henderson
+test deleted customer: Lilith Henderson
+test added new customer: This Name Is New

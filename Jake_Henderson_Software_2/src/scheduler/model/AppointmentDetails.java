@@ -5,13 +5,7 @@
  */
 package scheduler.model;
 
-import java.sql.Time;
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalTime;
-import java.util.Date;
-import java.util.TimeZone;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
