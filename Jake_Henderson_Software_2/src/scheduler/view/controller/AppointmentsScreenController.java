@@ -8,6 +8,7 @@ package scheduler.view.controller;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -21,7 +22,6 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
-import scheduler.controller.dbHelper;
 import scheduler.model.AppointmentDetails;
 import scheduler.model.AppointmentDetails.AppDetails;
 import scheduler.model.CustomerDetail;
@@ -92,7 +92,7 @@ public class AppointmentsScreenController implements Initializable {
     }
 
     @FXML
-    private void deleteAppointmentButtonHandler(ActionEvent event) throws IOException, SQLException {
+    private void deleteAppointmentButtonHandler(ActionEvent event) throws IOException, SQLException, ParseException {
         
         Parent root = FXMLLoader.load(getClass().
                 getResource("../Delete.fxml")); 

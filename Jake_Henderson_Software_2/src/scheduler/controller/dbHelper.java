@@ -12,18 +12,21 @@ import java.sql.Statement;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Time;
 import java.sql.Timestamp;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
+import java.util.TimeZone;
 import javafx.scene.control.Alert;
 import scheduler.model.AppointmentDetails;
 import scheduler.model.CustomerDetail;
-import scheduler.model.DaysOpen;
 import scheduler.model.EmployeeDetails;
 import scheduler.model.LogPrintWriter;
 import scheduler.model.upcomingAppointments;
+import scheduler.view.controller.LoginScreenController;
 
 /**
  *
@@ -129,7 +132,7 @@ public class dbHelper {
         return userName;
     }
         
-    public void retrieveUpcomingAppointments() throws ClassNotFoundException, SQLException {
+    public void retrieveUpcomingAppointments() throws ClassNotFoundException, SQLException, ParseException {
         
         //variables used in upcomingAppointmentsTable
         int customerId;
@@ -137,6 +140,13 @@ public class dbHelper {
         String appointmentType;
         String appointmentDate;
         String appointmentTime;
+        String dbTime;
+        
+        DateFormat utcDtf = new SimpleDateFormat("hh:mm:ss");
+        utcDtf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        DateFormat systemDtf = new SimpleDateFormat("h:mm a");
+        systemDtf.setTimeZone(LoginScreenController.timeZone);
+        Date appTime;
                         
         //retrieve customerId from customer table
         ResultSet rs;
@@ -147,7 +157,9 @@ public class dbHelper {
             while(rs.next()) {
                 appointmentType = rs.getString("type");
                 appointmentDate = rs.getDate("start").toString();
-                appointmentTime = rs.getTime("start").toString();
+                dbTime = rs.getTime("start").toString();
+                appTime = utcDtf.parse(dbTime);
+                appointmentTime = systemDtf.format(appTime);
                 customerId = rs.getInt("customerId");
                 ResultSet rs1;
                 try {
@@ -321,14 +333,21 @@ public class dbHelper {
         
     }
     
-    public void retrieveAppointmentDetails() {
+    public void retrieveAppointmentDetails() throws ParseException {
         //variables used in appointment details table
         String customerName;
         String employeeName;
         String location;
         String date;
         String time;
+        String dbTime;
         int appointmentId;
+        
+        DateFormat utcDtf = new SimpleDateFormat("hh:mm:ss");
+        utcDtf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        DateFormat systemDtf = new SimpleDateFormat("h:mm a");
+        systemDtf.setTimeZone(LoginScreenController.timeZone);
+        Date appTime;
         
         try {
             String sql = "SELECT appointmentid, customerId, userId, location, start FROM appointment";
@@ -340,7 +359,9 @@ public class dbHelper {
                 int userId = rs.getInt("userId");
                 location = rs.getString("location");
                 date = rs.getDate("start").toString();
-                time = rs.getTime("start").toString();
+                dbTime = rs.getTime("start").toString();
+                appTime = utcDtf.parse(dbTime);
+                time = systemDtf.format(appTime);
 
                 
                 stmt = conn.createStatement();

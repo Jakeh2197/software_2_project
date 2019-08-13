@@ -12,10 +12,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.ResourceBundle;
+import java.util.TimeZone;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.ActionEvent;
@@ -128,6 +130,8 @@ public class AddAppointmentScreenController implements Initializable {
         String adjustedEndTime = null;
         DateFormat dtf = new SimpleDateFormat("yyyy-mm-dd hh:mm a");
         DateFormat output = new SimpleDateFormat("yyyy-mm-dd HH:mm");
+        dtf.setTimeZone(TimeZone.getDefault());
+        output.setTimeZone(TimeZone.getTimeZone("UTC"));
         String open = appDate + " 9:00 AM";
         String close = appDate + " 5:00 PM";
         Date openTime = null;
@@ -160,10 +164,9 @@ public class AddAppointmentScreenController implements Initializable {
             
         } else {
             
-            
+            Date startDate = null;
             
             if(startTimeToggle.getSelectedToggle() == startTimeAmButton) {
-                Date startDate = null;
                 startTime = appDate + " " + start + " AM";
                 try {
                     startDate = dtf.parse(startTime);
@@ -184,10 +187,9 @@ public class AddAppointmentScreenController implements Initializable {
                     adjustedStartTime = output.format(startDate);
                 }
             } else if(startTimeToggle.getSelectedToggle() == startTimePmButton) {
-                Date endDate = null;
-                endTime = appDate + " " + start + " PM";
+                startTime = appDate + " " + start + " PM";
                 try {
-                    endDate = dtf.parse(endTime);
+                    startDate = dtf.parse(startTime);
                 } catch(ParseException e) {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Date or Time format error");
@@ -195,7 +197,7 @@ public class AddAppointmentScreenController implements Initializable {
                     alert.setContentText("No valid date or time entered. Please verify data being entered is correct");
                     alert.showAndWait();
                 }
-                if(endDate.after(closeTime)) {
+                if(startDate.after(closeTime)) {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
                     alert.setTitle("Appointment start time error");
                     alert.setHeaderText("Error!");
@@ -203,7 +205,7 @@ public class AddAppointmentScreenController implements Initializable {
                     alert.showAndWait();
             alert.showAndWait();
                 } else {
-                    adjustedEndTime = output.format(endDate);
+                    adjustedStartTime = output.format(startDate);
                 }
             }
             
@@ -226,7 +228,7 @@ public class AddAppointmentScreenController implements Initializable {
                     alert.setContentText("End time for appointments must not be before 9:00 AM");
                     alert.showAndWait();
                 } else {
-                    adjustedStartTime = output.format(endDate);
+                    adjustedEndTime = output.format(endDate);
                 }
             } else if(endTimeToggle.getSelectedToggle() == endTimePmButton) {
                 Date endDate = null;
@@ -283,7 +285,17 @@ public class AddAppointmentScreenController implements Initializable {
                 helper.addAppointment(customerName, employeeName, title, description, location, contact, type, adjustedStartTime, adjustedEndTime);
             } catch(NullPointerException e) {
                 
-            } 
+            }
+            
+            locationTextField.clear();
+            titleTextField.clear();
+            typeTextField.clear();
+            contactTextField.clear();
+            descriptionTextArea.clear();
+            startTimeTextField.clear();
+            endTimeTextField.clear();
+            dateTextField.clear();
+            
         }
       
     }

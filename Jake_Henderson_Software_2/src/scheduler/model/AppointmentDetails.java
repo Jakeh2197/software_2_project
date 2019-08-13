@@ -5,6 +5,13 @@
  */
 package scheduler.model;
 
+import java.sql.Time;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.util.Date;
+import java.util.TimeZone;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -26,8 +33,15 @@ public class AppointmentDetails {
         private StringProperty date = new SimpleStringProperty();
         private StringProperty time = new SimpleStringProperty();
         private int appointmentId;
+//        private DateFormat dtf = new SimpleDateFormat("hh:mm");
+//        private final TimeZone tz = TimeZone.getDefault();
         
-        public AppDetails(String customerName, String employeeName, String location, String date, String time, int appointmentId) {
+        
+        public AppDetails(String customerName, String employeeName, String location, String date, String time, int appointmentId) throws ParseException {
+            
+//            dtf.setTimeZone(tz);
+//            Date adjustedTime = dtf.parse(time);
+            
             setCustomerName(customerName);
             setEmployeeName(employeeName);
             setLocation(location);
@@ -86,7 +100,7 @@ public class AppointmentDetails {
     }
     
             
-    public static void addAppointmentDetails(String customerName, String employeeName, String location, String date, String time, int appointmentId) {
+    public static void addAppointmentDetails(String customerName, String employeeName, String location, String date, String time, int appointmentId) throws ParseException {
         AppDetails details = new AppDetails(customerName, employeeName, location, date, time, appointmentId);
         appDetails.add(details);
     }

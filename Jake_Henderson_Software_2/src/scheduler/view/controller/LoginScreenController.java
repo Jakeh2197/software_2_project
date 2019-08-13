@@ -8,7 +8,7 @@ package scheduler.view.controller;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
-import java.util.Calendar;
+import java.text.ParseException;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
 import javafx.event.ActionEvent;
@@ -48,7 +48,7 @@ public class LoginScreenController implements Initializable {
     } 
     
     @FXML
-    private void loginButtonHandler(ActionEvent event) throws IOException, ClassNotFoundException, SQLException {
+    private void loginButtonHandler(ActionEvent event) throws IOException, ClassNotFoundException, SQLException, ParseException {
         
         helper = new dbHelper();
                         

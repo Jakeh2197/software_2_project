@@ -8,6 +8,7 @@ package scheduler.view.controller;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -116,7 +117,7 @@ public class MainScreenController implements Initializable {
     }
     
     @FXML
-    private void appointmentsButtonHandler(ActionEvent event) throws IOException {
+    private void appointmentsButtonHandler(ActionEvent event) throws IOException, ParseException {
         
         helper.retrieveAppointmentDetails();
         
