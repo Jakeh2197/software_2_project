@@ -14,6 +14,7 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -21,9 +22,11 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.VBox;
 import javafx.stage.WindowEvent;
 import scheduler.model.AppointmentDetails;
 import scheduler.model.CustomerDetail;
+import scheduler.model.EmployeeDetails.EmployeeName;
 import scheduler.model.upcomingAppointments;
 import scheduler.model.upcomingAppointments.App;
 import static scheduler.view.controller.LoginScreenController.helper;
@@ -148,13 +151,30 @@ public class MainScreenController implements Initializable {
     
     @FXML
     private void monthlySchedulesButtonHandler(ActionEvent event) throws IOException {
+        
+        TableView schedules = new TableView();
+        schedules.prefWidth(500);
+        schedules.prefHeight(900);
+        schedules.setMinWidth(500);
+        schedules.setMinHeight(900);
+        schedules.autosize();
+        TableColumn<String, EmployeeName> employee = new TableColumn<>("Employee");
+        employee.widthProperty();
+        schedules.getColumns().add(employee);
+        
+        
+        
+        
+        
         Parent root = FXMLLoader.load(getClass().
                 getResource("../MonthlySchedules.fxml")); 
-        Scene scene = new Scene(root);
+        Scene scene = new Scene(schedules);
         Stage stage = new Stage();
         stage.setTitle("Scheduler");
         stage.setScene(scene);
         stage.show();
+        
+        
     }
     
     @FXML

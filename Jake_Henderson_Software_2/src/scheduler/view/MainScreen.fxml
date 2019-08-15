@@ -22,8 +22,10 @@
             <TableColumn fx:id="timeColumn" prefWidth="94.0" text="Time" />
         </columns>
       </TableView>
-      <Button fx:id="logoutButton" layoutX="518.0" layoutY="361.0" mnemonicParsing="false" onAction="#logoutButtonHandler" prefWidth="100.0" text="Logout" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0" />
-      <Button fx:id="customersButton" layoutX="518.0" layoutY="330.0" mnemonicParsing="false" onAction="#customersButtonHandler" prefWidth="100.0" text="Customers" AnchorPane.bottomAnchor="45.0" AnchorPane.rightAnchor="10.0" />
-      <Button fx:id="appoointmentsButton" layoutX="518.0" layoutY="295.0" mnemonicParsing="false" onAction="#appointmentsButtonHandler" prefWidth="100.0" text="Appointments" AnchorPane.bottomAnchor="80.0" AnchorPane.rightAnchor="10.0" />
+      <Button fx:id="appoointmentsButton" layoutX="518.0" layoutY="295.0" mnemonicParsing="false" onAction="#appointmentsButtonHandler" prefWidth="125.0" text="Appointments" AnchorPane.bottomAnchor="80.0" AnchorPane.rightAnchor="10.0" />
+      <Button fx:id="customersButton" layoutX="518.0" layoutY="330.0" mnemonicParsing="false" onAction="#customersButtonHandler" prefWidth="125.0" text="Customers" AnchorPane.bottomAnchor="45.0" AnchorPane.rightAnchor="10.0" />
+      <Button fx:id="logoutButton" layoutX="518.0" layoutY="361.0" mnemonicParsing="false" onAction="#logoutButtonHandler" prefWidth="125.0" text="Logout" AnchorPane.bottomAnchor="10.0" AnchorPane.rightAnchor="10.0" />
+      <Button fx:id="weeklySchedulesBUtton" layoutX="465.0" layoutY="263.0" mnemonicParsing="false" onAction="#weeklySchedulesButtonHandler" prefWidth="125.0" text="WeeklySchedules" />
+      <Button fx:id="monthlySchedulesButton" layoutX="465.0" layoutY="231.0" mnemonicParsing="false" onAction="#monthlySchedulesButtonHandler" prefWidth="125.0" text="Montly Schedules" />
     </children>
 </AnchorPane>
