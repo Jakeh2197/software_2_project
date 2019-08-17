@@ -118,8 +118,8 @@ public class AddAppointmentScreenController implements Initializable {
         String adjustedStartTime = null;
         String endTime = null;
         String adjustedEndTime = null;
-        DateFormat dtf = new SimpleDateFormat("yyyy-mm-dd hh:mm a");
-        DateFormat output = new SimpleDateFormat("yyyy-mm-dd HH:mm");
+        DateFormat dtf = new SimpleDateFormat("yyyy-MM-dd hh:mm a");
+        DateFormat output = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         dtf.setTimeZone(TimeZone.getDefault());
         output.setTimeZone(TimeZone.getTimeZone("UTC"));
         String open = appDate + " 9:00 AM";

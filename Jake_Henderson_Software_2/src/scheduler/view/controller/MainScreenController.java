@@ -10,14 +10,16 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ResourceBundle;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.stage.Stage;
@@ -26,7 +28,10 @@ import javafx.scene.layout.VBox;
 import javafx.stage.WindowEvent;
 import scheduler.model.AppointmentDetails;
 import scheduler.model.CustomerDetail;
+import scheduler.model.EmployeeAppointments;
+import scheduler.model.EmployeeDetails;
 import scheduler.model.EmployeeDetails.EmployeeName;
+import static scheduler.model.EmployeeDetails.employeeNames;
 import scheduler.model.upcomingAppointments;
 import scheduler.model.upcomingAppointments.App;
 import static scheduler.view.controller.LoginScreenController.helper;
@@ -64,6 +69,9 @@ public class MainScreenController implements Initializable {
      * @param url
      * @param rb
      */
+    
+//    public static ObservableList<EmployeeAppointments> employeeAppointments;
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
                 
@@ -150,30 +158,68 @@ public class MainScreenController implements Initializable {
     }
     
     @FXML
-    private void monthlySchedulesButtonHandler(ActionEvent event) throws IOException {
+    private void monthlySchedulesButtonHandler(ActionEvent event) throws IOException, SQLException, ParseException {
         
-        TableView schedules = new TableView();
-        schedules.prefWidth(500);
-        schedules.prefHeight(900);
-        schedules.setMinWidth(500);
-        schedules.setMinHeight(900);
-        schedules.autosize();
-        TableColumn<String, EmployeeName> employee = new TableColumn<>("Employee");
-        employee.widthProperty();
-        schedules.getColumns().add(employee);
+        ScrollPane window = new ScrollPane();
+        window.setMaxHeight(650);
+        VBox content = new VBox();
+        
+        helper.retrieveEmployeeDetails();
         
         
+        for(EmployeeName n : employeeNames) {
+            
+            ObservableList<EmployeeAppointments> employeeAppointments = FXCollections.observableArrayList();
+            
+            helper.retrieveEmployeeAppointments(n.getName(), employeeAppointments);
+                        
+            TableView schedulesTable = new TableView();
+            
+            TableColumn<String, EmployeeName> employeeColumn = new TableColumn<>();
+            TableColumn<String, EmployeeAppointments> customerNameColumn = new TableColumn<>("Customer");
+            TableColumn<String, EmployeeAppointments> dateColumn = new TableColumn<>("Date");           
+            TableColumn<String, EmployeeAppointments> startTimeColumn = new TableColumn<>("Start Time");
+            TableColumn<String, EmployeeAppointments> typeColumn = new TableColumn<>("Appointment Type");
+            TableColumn<String, EmployeeAppointments> locationColumn = new TableColumn<>("Location");
+            
+            schedulesTable.setMinHeight(200);
+            schedulesTable.setMinWidth(625);
+            employeeColumn.setMinWidth(625);
+            employeeColumn.setText(n.getName());
+            customerNameColumn.setMinWidth(125);
+            dateColumn.setMinWidth(125);
+            startTimeColumn.setMinWidth(125);
+            typeColumn.setMinWidth(125);
+            locationColumn.setMinWidth(125);
+            
+            employeeColumn.getColumns().addAll(customerNameColumn, dateColumn, startTimeColumn, typeColumn, locationColumn); 
+            
+            schedulesTable.setItems(employeeAppointments);
+            customerNameColumn.setCellValueFactory(new PropertyValueFactory("customerName"));
+            dateColumn.setCellValueFactory(new PropertyValueFactory("customerName"));
+            startTimeColumn.setCellValueFactory(new PropertyValueFactory("startTime"));
+            typeColumn.setCellValueFactory(new PropertyValueFactory("type"));
+            locationColumn.setCellValueFactory(new PropertyValueFactory("location"));
+            
+            schedulesTable.getColumns().setAll(employeeColumn);
+            content.getChildren().add(schedulesTable);
+   
+        }
         
-        
-        
+        window.setContent(content);
+
         Parent root = FXMLLoader.load(getClass().
                 getResource("../MonthlySchedules.fxml")); 
-        Scene scene = new Scene(schedules);
+        Scene scene = new Scene(window);
         Stage stage = new Stage();
         stage.setTitle("Scheduler");
         stage.setScene(scene);
         stage.show();
         
+        
+        stage.setOnCloseRequest((WindowEvent we) -> {
+            EmployeeDetails.employeeNames.clear();
+        });
         
     }
     

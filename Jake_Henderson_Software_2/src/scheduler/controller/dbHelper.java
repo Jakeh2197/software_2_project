@@ -16,16 +16,21 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import static java.time.LocalDate.now;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.TimeZone;
+import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import scheduler.model.AppointmentDetails;
 import scheduler.model.CustomerDetail;
+import scheduler.model.EmployeeAppointments;
 import scheduler.model.EmployeeDetails;
 import scheduler.model.LogPrintWriter;
 import scheduler.model.upcomingAppointments;
 import scheduler.view.controller.LoginScreenController;
+import scheduler.view.controller.MainScreenController;
 
 /**
  *
@@ -450,7 +455,71 @@ public class dbHelper {
         
         String change = userName + " deleted appointment: " + appointmentId;
         LogPrintWriter.writeChangeLog(change);
-    }   
+    }  
+    
+    public EmployeeAppointments retrieveEmployeeAppointments(String employeeName, ObservableList employee) throws SQLException, ParseException {
+        
+        DateFormat utcDtf = new SimpleDateFormat("hh:mm:ss");
+        utcDtf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        DateFormat systemDtf = new SimpleDateFormat("h:mm a");
+        systemDtf.setTimeZone(LoginScreenController.timeZone);
+        Date appTime;
+        String dbTime;
+        
+        EmployeeAppointments appointments = null;
+        
+        int customerId;
+        String customerName;
+        String appointmentType;
+        String appointmentLocation;
+        String appointmentDate;
+        String appointmentTime;
+        
+        int employeeId;
+        
+        String retrieveEmployeeId = "SELECT userId FROM user WHERE userName=?";
+        PreparedStatement ps = conn.prepareStatement(retrieveEmployeeId);
+        ps.setString(1, employeeName);
+        ResultSet rs = ps.executeQuery();
+        while(rs.next()) {
+            employeeId = rs.getInt("userId");
+            
+            String retrieveEmployeeAppointments = "SELECT customerId, location, type, start FROM appointment WHERE userId=?";
+            PreparedStatement ps1 = conn.prepareStatement(retrieveEmployeeAppointments);
+            ps1.setInt(1, employeeId);
+            ResultSet rs1 = ps1.executeQuery();
+            while(rs1.next()) {
+                customerId = rs1.getInt("customerId");
+                appointmentType = rs1.getString("type");
+                LocalDate date = rs1.getDate("start").toLocalDate();
+                appointmentDate = rs1.getDate("start").toString();
+                appointmentLocation = rs1.getString("location");
+                dbTime = rs1.getTime("start").toString();
+                appTime = utcDtf.parse(dbTime);
+                appointmentTime = systemDtf.format(appTime);
+                
+                
+                LocalDate now = LocalDate.now();
+                if(date.getMonth() == now.getMonth()) {
+                    System.out.println("Made it");
+                    String retrieveCustomerName = "SELECT customerName FROM customer WHERE customerid=?";
+                    PreparedStatement ps2 = conn.prepareStatement(retrieveCustomerName);
+                    ps2.setInt(1, customerId);
+                    ResultSet rs2 = ps2.executeQuery();
+                    while(rs2.next()) {
+                        customerName = rs2.getString("customerName");
+                        appointments = new EmployeeAppointments(customerName, appointmentDate, appointmentTime, appointmentType, appointmentLocation);
+                        employee.add(appointments);
+                    }
+                    
+                }
+                
+            }
+        }
+
+        return appointments;
+        
+    }
     
     public static int getUserId() {
         return databaseUserId;
