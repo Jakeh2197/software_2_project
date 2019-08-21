@@ -17,7 +17,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import static java.time.LocalDate.now;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.TimeZone;
@@ -30,7 +30,6 @@ import scheduler.model.EmployeeDetails;
 import scheduler.model.LogPrintWriter;
 import scheduler.model.upcomingAppointments;
 import scheduler.view.controller.LoginScreenController;
-import scheduler.view.controller.MainScreenController;
 
 /**
  *
@@ -406,10 +405,40 @@ public class dbHelper {
     public void addAppointment(String customerName, String employeeName, String title, String description, String location, String contact, String type, String startDate,  String endDate) throws SQLException, DateTimeParseException {
                 
         String userName = this.retrieveUserName(databaseUserId);
+        int userId = 0;
         
+        String selectUserId ="SELECT userId FROM user WHERE userName=?";
+        PreparedStatement ps1 = conn.prepareStatement(selectUserId);
+        ps1.setString(1, employeeName);
+        ResultSet rs1 = ps1.executeQuery();
+        while(rs1.next()) {
+            userId = rs1.getInt("userId");
+        }
+                
+        String duplicateAppointmentCheck = "SELECT userId, start, end FROM appointment WHERE userID=?";
+        PreparedStatement ps3 = conn.prepareStatement(duplicateAppointmentCheck);
+        ps3.setInt(1, userId);
+        ResultSet rs2 = ps3.executeQuery();
+        while(rs2.next()) {
+            
+            LocalDateTime enteredStartTime = LocalDateTime.parse(startDate.replace(" ", "T"));
+            LocalDateTime enteredEndTime = LocalDateTime.parse(endDate.replace(" ", "T"));
+            LocalDateTime dbStartTime = LocalDateTime.parse((rs2.getString("start")).replace(" ", "T"));
+            LocalDateTime dbEndTime = LocalDateTime.parse((rs2.getString("end")).replace(" ", "T"));
+            
+            if(enteredStartTime.isBefore(dbStartTime) && enteredEndTime.isBefore(dbStartTime) || enteredStartTime.isAfter(dbEndTime)) {
+                System.out.println("No conflicing appointments");
+            } else {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Appointmnet overlap");
+                alert.setHeaderText("Error!");
+                alert.setContentText("The entered appointment times overlap with previously entered appointment(s)");
+                alert.showAndWait();
+            }
+            
+        }
                 
         int customerId;
-        int userId;
 
         String selectCustomerId = "SELECT customerid FROM customer WHERE customerName=?";
         PreparedStatement ps = conn.prepareStatement(selectCustomerId);
@@ -417,29 +446,22 @@ public class dbHelper {
         ResultSet rs = ps.executeQuery();
         while(rs.next()) {
             customerId = rs.getInt("customerid");
+            String addAppointment = "INSERT INTO appointment (customerId, userId, title, description, location, contact, type, url, start, end, createDate, createdBy, lastUpdate, lastUpdateBy) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now(), ?, now(), ?)";
+            PreparedStatement ps2 = conn.prepareStatement(addAppointment);
+            ps2.setString(1, Integer.toString(customerId));
+            ps2.setString(2, Integer.toString(userId));
+            ps2.setString(3, title);
+            ps2.setString(4, description);
+            ps2.setString(5, location);
+            ps2.setString(6, contact);
+            ps2.setString(7, type);
+            ps2.setString(8, "");
+            ps2.setString(9, startDate);
+            ps2.setString(10, endDate);
+            ps2.setString(11, userName);
+            ps2.setString(12, userName);
+            ps2.executeUpdate();
             
-            String selectUserId ="SELECT userId FROM user WHERE userName=?";
-            PreparedStatement ps1 = conn.prepareStatement(selectUserId);
-            ps1.setString(1, employeeName);
-            ResultSet rs1 = ps1.executeQuery();
-            while(rs1.next()) {
-                userId = rs1.getInt("userId");
-                String addAppointment = "INSERT INTO appointment (customerId, userId, title, description, location, contact, type, url, start, end, createDate, createdBy, lastUpdate, lastUpdateBy) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now(), ?, now(), ?)";
-                PreparedStatement ps2 = conn.prepareStatement(addAppointment);
-                ps2.setString(1, Integer.toString(customerId));
-                ps2.setString(2, Integer.toString(userId));
-                ps2.setString(3, title);
-                ps2.setString(4, description);
-                ps2.setString(5, location);
-                ps2.setString(6, contact);
-                ps2.setString(7, type);
-                ps2.setString(8, "");
-                ps2.setString(9, startDate);
-                ps2.setString(10, endDate);
-                ps2.setString(11, userName);
-                ps2.setString(12, userName);
-                ps2.executeUpdate();
-            }
         }
   
     }
@@ -499,20 +521,17 @@ public class dbHelper {
                 appointmentTime = systemDtf.format(appTime);
                 
                 
-                LocalDate now = LocalDate.now();
-                if(date.getMonth() == now.getMonth()) {
-                    System.out.println("Made it");
-                    String retrieveCustomerName = "SELECT customerName FROM customer WHERE customerid=?";
-                    PreparedStatement ps2 = conn.prepareStatement(retrieveCustomerName);
-                    ps2.setInt(1, customerId);
-                    ResultSet rs2 = ps2.executeQuery();
-                    while(rs2.next()) {
-                        customerName = rs2.getString("customerName");
-                        appointments = new EmployeeAppointments(customerName, appointmentDate, appointmentTime, appointmentType, appointmentLocation);
-                        employee.add(appointments);
-                    }
-                    
+                String retrieveCustomerName = "SELECT customerName FROM customer WHERE customerid=?";
+                PreparedStatement ps2 = conn.prepareStatement(retrieveCustomerName);
+                ps2.setInt(1, customerId);
+                ResultSet rs2 = ps2.executeQuery();
+                while(rs2.next()) {
+                    customerName = rs2.getString("customerName");
+                    appointments = new EmployeeAppointments(customerName, appointmentDate, appointmentTime, appointmentType, appointmentLocation);
+                    employee.add(appointments);
                 }
+                    
+                
                 
             }
         }

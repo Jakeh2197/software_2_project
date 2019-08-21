@@ -10,6 +10,7 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
@@ -269,22 +270,30 @@ public class AddAppointmentScreenController implements Initializable {
             }
 
 
-
-
-            try {
+            LocalDateTime testStartTime = LocalDateTime.parse(adjustedStartTime.replace(" ", "T"));
+            LocalDateTime testEndTime = LocalDateTime.parse(adjustedEndTime.replace(" ", "T"));
+            if(testStartTime.isBefore(testEndTime)) {
+                try {
                 helper.addAppointment(customerName, employeeName, title, description, location, contact, type, adjustedStartTime, adjustedEndTime);
-            } catch(NullPointerException e) {
-                
+                } catch(NullPointerException e) {
+
+                }
+                locationTextField.clear();
+                titleTextField.clear();
+                typeTextField.clear();
+                contactTextField.clear();
+                descriptionTextArea.clear();
+                startTimeTextField.clear();
+                endTimeTextField.clear();
+                dateTextField.clear();
+            } else {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("End Time Before Start Time");
+                alert.setHeaderText("Error!");
+                alert.setContentText("End time must be after start time");
+                alert.showAndWait();
             }
             
-            locationTextField.clear();
-            titleTextField.clear();
-            typeTextField.clear();
-            contactTextField.clear();
-            descriptionTextArea.clear();
-            startTimeTextField.clear();
-            endTimeTextField.clear();
-            dateTextField.clear();
             
         }
       
