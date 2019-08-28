@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+
+<AnchorPane id="AnchorPane" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/10.0.1" fx:controller="scheduler.view.CalenderScreenController">
+   <children>
+      <TableView fx:id="CalenderTable" layoutX="14.0" layoutY="14.0" prefHeight="370.0" prefWidth="570.0">
+        <columns>
+          <TableColumn fx:id="appointmentDateColumn" prefWidth="141.0" text="Appointment Date" />
+          <TableColumn fx:id="appointmentTimeColumn" prefWidth="141.0" text="Appointment Time" />
+            <TableColumn fx:id="appointmentTypeColumn" prefWidth="141.0" text="Appointment Type" />
+            <TableColumn fx:id="employeeColumn" prefWidth="147.0" text="Employee" />
+        </columns>
+      </TableView>
+   </children>
+</AnchorPane>

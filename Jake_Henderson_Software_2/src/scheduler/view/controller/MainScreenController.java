@@ -10,6 +10,8 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ResourceBundle;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -18,6 +20,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
@@ -27,6 +30,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.stage.WindowEvent;
 import scheduler.model.AppointmentDetails;
+import scheduler.model.CalenderDetails;
 import scheduler.model.CustomerDetail;
 import scheduler.model.EmployeeAppointments;
 import scheduler.model.EmployeeDetails;
@@ -60,9 +64,12 @@ public class MainScreenController implements Initializable {
     @FXML
     private Button appointmentsButton;
     @FXML
-    private Button monthlySchedulesButton;
+    private Button monthlyCalenderButton;
     @FXML
-    private Button weeklySchedulesButton;
+    private Button weeklyCalenderButton;
+    @FXML
+    private Button employeeSchedulesButton;
+    
     
     /**
      * Initializes the controller class.
@@ -82,6 +89,19 @@ public class MainScreenController implements Initializable {
         dateColumn.setCellValueFactory(new PropertyValueFactory("appDate"));
         timeColumn.setCellValueFactory(new PropertyValueFactory("appTime"));
         upcomingAppointmentsTable.getColumns().setAll(customerColumn, appointmentTypeColumn, dateColumn, timeColumn);
+        
+        try {
+            int appointments = helper.checkForImmediateAppoitments();
+            if (appointments != 0) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Appointment starting soon");
+                alert.setHeaderText("Alert!");
+                alert.setContentText("You have " + appointments + " appointments starting soon.");
+                alert.showAndWait();
+            }
+        } catch (SQLException | ParseException ex) {
+            
+        }
         
     }    
     
@@ -158,7 +178,7 @@ public class MainScreenController implements Initializable {
     }
     
     @FXML
-    private void monthlySchedulesButtonHandler(ActionEvent event) throws IOException, SQLException, ParseException {
+    private void employeeSchedulesButton(ActionEvent event) throws IOException, SQLException, ParseException {
         
         ScrollPane window = new ScrollPane();
         window.setMaxHeight(650);
@@ -196,7 +216,7 @@ public class MainScreenController implements Initializable {
             
             schedulesTable.setItems(employeeAppointments);
             customerNameColumn.setCellValueFactory(new PropertyValueFactory("customerName"));
-            dateColumn.setCellValueFactory(new PropertyValueFactory("customerName"));
+            dateColumn.setCellValueFactory(new PropertyValueFactory("date"));
             startTimeColumn.setCellValueFactory(new PropertyValueFactory("startTime"));
             typeColumn.setCellValueFactory(new PropertyValueFactory("type"));
             locationColumn.setCellValueFactory(new PropertyValueFactory("location"));
@@ -209,7 +229,7 @@ public class MainScreenController implements Initializable {
         window.setContent(content);
 
         Parent root = FXMLLoader.load(getClass().
-                getResource("../MonthlySchedules.fxml")); 
+                getResource("../EmployeeSchedulesScreen.fxml")); 
         Scene scene = new Scene(window);
         Stage stage = new Stage();
         stage.setTitle("Scheduler");
@@ -224,7 +244,40 @@ public class MainScreenController implements Initializable {
     }
     
     @FXML
-    private void weeklySchedulesButtonHandler(ActionEvent event) {
+    private void monthlyCalenderButtonHandler(ActionEvent event) throws IOException, SQLException, ParseException {
+        
+        helper.retrieveMontlyCalender();
+        
+        Parent root = FXMLLoader.load(getClass().
+                getResource("../CalenderScreen.fxml")); 
+        Scene scene = new Scene(root);
+        Stage stage = new Stage();
+        stage.setTitle("Scheduler");
+        stage.setScene(scene);
+        stage.show();
+        
+        stage.setOnCloseRequest((WindowEvent we) -> {
+            CalenderDetails.calenderDetails.clear();
+        });
+        
+    }
+    
+    @FXML
+    private void weeklyCalenderButtonHandler(ActionEvent event) throws IOException, SQLException, ParseException {
+        
+        helper.retrieveWeeklyCalender();
+        
+        Parent root = FXMLLoader.load(getClass().
+                getResource("../CalenderScreen.fxml")); 
+        Scene scene = new Scene(root);
+        Stage stage = new Stage();
+        stage.setTitle("Scheduler");
+        stage.setScene(scene);
+        stage.show();
+        
+        stage.setOnCloseRequest((WindowEvent we) -> {
+            CalenderDetails.calenderDetails.clear();
+        });
         
     }
 

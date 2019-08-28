@@ -16,14 +16,17 @@ import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.TimeZone;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
 import scheduler.model.AppointmentDetails;
+import scheduler.model.CalenderDetails;
 import scheduler.model.CustomerDetail;
 import scheduler.model.EmployeeAppointments;
 import scheduler.model.EmployeeDetails;
@@ -144,7 +147,10 @@ public class dbHelper {
         String appointmentDate;
         String appointmentTime;
         String dbTime;
+        //used to compare appointments to ensure they haven't already happened
+        LocalDateTime now = LocalDateTime.now();
         
+        //used to convert time between UTC and system time zones
         DateFormat utcDtf = new SimpleDateFormat("hh:mm:ss");
         utcDtf.setTimeZone(TimeZone.getTimeZone("UTC"));
         DateFormat systemDtf = new SimpleDateFormat("h:mm a");
@@ -155,26 +161,37 @@ public class dbHelper {
         ResultSet rs;
         try {
             stmt = conn.createStatement();
-            rs = stmt.executeQuery("SELECT type, start, customerId FROM appointment WHERE userID=" + databaseUserId);
+            rs = stmt.executeQuery("SELECT type, start, customerId FROM appointment WHERE userID=" + databaseUserId + " ORDER BY start");
             rs.beforeFirst();
             while(rs.next()) {
-                appointmentType = rs.getString("type");
-                appointmentDate = rs.getDate("start").toString();
-                dbTime = rs.getTime("start").toString();
-                appTime = utcDtf.parse(dbTime);
-                appointmentTime = systemDtf.format(appTime);
-                customerId = rs.getInt("customerId");
-                ResultSet rs1;
-                try {
-                    stmt = conn.createStatement();
-                    rs1 = stmt.executeQuery("SELECT customerName FROM customer WHERE customerid=" + customerId);
-                    while(rs1.next()) {
-                        customerName = rs1.getString("customerName");
-                    }
-                    upcomingAppointments.addAppointment(customerName, appointmentType, appointmentDate, appointmentTime);
-                } catch(SQLException e) {
-                    
-                }   
+                //compare appointment date to now object to verify it hasn't already occurred
+                DateFormat compareDtf = new SimpleDateFormat("hh:mm:ss");
+                String date = rs.getDate("start").toString();
+                String time = rs.getTime("start").toString();
+                Date convertTime = utcDtf.parse(time);
+                String convertedTime = compareDtf.format(convertTime);
+                LocalDateTime databaseAppTime = LocalDateTime.parse(date + "T" + convertedTime);
+                
+                if(now.isBefore(databaseAppTime)) {
+                    appointmentType = rs.getString("type");
+                    appointmentDate = rs.getDate("start").toString();
+                    dbTime = rs.getTime("start").toString();
+                    appTime = utcDtf.parse(dbTime);
+                    appointmentTime = systemDtf.format(appTime);
+                    customerId = rs.getInt("customerId");
+                    ResultSet rs1;
+                    try {
+                        stmt = conn.createStatement();
+                        rs1 = stmt.executeQuery("SELECT customerName FROM customer WHERE customerid=" + customerId);
+                        while(rs1.next()) {
+                            customerName = rs1.getString("customerName");
+                        }
+                        upcomingAppointments.addAppointment(customerName, appointmentType, appointmentDate, appointmentTime);
+                    } catch(SQLException e) {
+
+                    } 
+                }
+                   
             }
             
                       
@@ -352,33 +369,50 @@ public class dbHelper {
         systemDtf.setTimeZone(LoginScreenController.timeZone);
         Date appTime;
         
+        //used to compare appointments to ensure they didnt already happen
+        LocalDateTime now = LocalDateTime.now();
+        
         try {
-            String sql = "SELECT appointmentid, customerId, userId, location, start FROM appointment";
+            String sql = "SELECT appointmentid, customerId, userId, location, start FROM appointment ORDER BY start";
             PreparedStatement ps = conn.prepareStatement(sql);
             ResultSet rs = ps.executeQuery();
             while(rs.next()) {
-                appointmentId = rs.getInt("appointmentid");
-                int customerId = rs.getInt("customerid");
-                int userId = rs.getInt("userId");
-                location = rs.getString("location");
-                date = rs.getDate("start").toString();
-                dbTime = rs.getTime("start").toString();
-                appTime = utcDtf.parse(dbTime);
-                time = systemDtf.format(appTime);
-
                 
-                stmt = conn.createStatement();
-                ResultSet cust = stmt.executeQuery("SELECT customerName FROM customer WHERE customerid=" + customerId);
-                while(cust.next()) {
-                    customerName = cust.getString("customerName");
+                //compare appointment date to now object to verify it hasn't already occured
+                DateFormat compareDtf = new SimpleDateFormat("hh:mm:ss");
+                String appoitmentDate = rs.getDate("start").toString();
+                String appoitmentTime = rs.getTime("start").toString();
+                Date convertTime = utcDtf.parse(appoitmentTime);
+                String convertedTime = compareDtf.format(convertTime);
+                LocalDateTime databaseAppTime = LocalDateTime.parse(appoitmentDate + "T" + convertedTime);
+                
+                if(now.isBefore(databaseAppTime)) {
                     
+                    appointmentId = rs.getInt("appointmentid");
+                    int customerId = rs.getInt("customerid");
+                    int userId = rs.getInt("userId");
+                    location = rs.getString("location");
+                    date = rs.getDate("start").toString();
+                    dbTime = rs.getTime("start").toString();
+                    appTime = utcDtf.parse(dbTime);
+                    time = systemDtf.format(appTime);
+
+
                     stmt = conn.createStatement();
-                    ResultSet emp = stmt.executeQuery("SELECT userName FROM user WHERE userId=" + userId);
-                    while(emp.next()) {
-                        employeeName = emp.getString("userName");
-                        AppointmentDetails.addAppointmentDetails(customerName, employeeName, location, date, time, appointmentId);
+                    ResultSet cust = stmt.executeQuery("SELECT customerName FROM customer WHERE customerid=" + customerId);
+                    while(cust.next()) {
+                        customerName = cust.getString("customerName");
+
+                        stmt = conn.createStatement();
+                        ResultSet emp = stmt.executeQuery("SELECT userName FROM user WHERE userId=" + userId);
+                        while(emp.next()) {
+                            employeeName = emp.getString("userName");
+                            AppointmentDetails.addAppointmentDetails(customerName, employeeName, location, date, time, appointmentId);
+                        }
                     }
                 }
+                
+                
               
             }
             
@@ -427,7 +461,6 @@ public class dbHelper {
             LocalDateTime dbEndTime = LocalDateTime.parse((rs2.getString("end")).replace(" ", "T"));
             
             if(enteredStartTime.isBefore(dbStartTime) && enteredEndTime.isBefore(dbStartTime) || enteredStartTime.isAfter(dbEndTime)) {
-                System.out.println("No conflicing appointments");
             } else {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Appointmnet overlap");
@@ -488,6 +521,9 @@ public class dbHelper {
         Date appTime;
         String dbTime;
         
+        //this is used to compare appointments to current date in order to not display old appointments
+        LocalDateTime now = LocalDateTime.now();
+        
         EmployeeAppointments appointments = null;
         
         int customerId;
@@ -506,37 +542,166 @@ public class dbHelper {
         while(rs.next()) {
             employeeId = rs.getInt("userId");
             
-            String retrieveEmployeeAppointments = "SELECT customerId, location, type, start FROM appointment WHERE userId=?";
+            String retrieveEmployeeAppointments = "SELECT customerId, location, type, start FROM appointment WHERE userId=? ORDER BY start";
             PreparedStatement ps1 = conn.prepareStatement(retrieveEmployeeAppointments);
             ps1.setInt(1, employeeId);
             ResultSet rs1 = ps1.executeQuery();
             while(rs1.next()) {
-                customerId = rs1.getInt("customerId");
-                appointmentType = rs1.getString("type");
-                LocalDate date = rs1.getDate("start").toLocalDate();
-                appointmentDate = rs1.getDate("start").toString();
-                appointmentLocation = rs1.getString("location");
-                dbTime = rs1.getTime("start").toString();
-                appTime = utcDtf.parse(dbTime);
-                appointmentTime = systemDtf.format(appTime);
+                //create a LocalDateTime object to verify appointment hasn't already passed
+                DateFormat compareDtf = new SimpleDateFormat("hh:mm:ss");
+                String appDate = rs1.getDate("start").toString();
+                String time = rs1.getTime("start").toString();
+                Date convertTime = utcDtf.parse(time);
+                String convertedTime = compareDtf.format(convertTime);
+                LocalDateTime databaseAppTime = LocalDateTime.parse(appDate + "T" + convertedTime);
                 
-                
-                String retrieveCustomerName = "SELECT customerName FROM customer WHERE customerid=?";
-                PreparedStatement ps2 = conn.prepareStatement(retrieveCustomerName);
-                ps2.setInt(1, customerId);
-                ResultSet rs2 = ps2.executeQuery();
-                while(rs2.next()) {
-                    customerName = rs2.getString("customerName");
-                    appointments = new EmployeeAppointments(customerName, appointmentDate, appointmentTime, appointmentType, appointmentLocation);
-                    employee.add(appointments);
+                if(now.isBefore(databaseAppTime)) {
+                    customerId = rs1.getInt("customerId");
+                    appointmentType = rs1.getString("type");
+                    appointmentDate = rs1.getDate("start").toString();
+                    appointmentLocation = rs1.getString("location");
+                    dbTime = rs1.getTime("start").toString();
+                    appTime = utcDtf.parse(dbTime);
+                    appointmentTime = systemDtf.format(appTime);
+
+
+                    String retrieveCustomerName = "SELECT customerName FROM customer WHERE customerid=?";
+                    PreparedStatement ps2 = conn.prepareStatement(retrieveCustomerName);
+                    ps2.setInt(1, customerId);
+                    ResultSet rs2 = ps2.executeQuery();
+                    while(rs2.next()) {
+                        customerName = rs2.getString("customerName");
+                        appointments = new EmployeeAppointments(customerName, appointmentDate, appointmentTime, appointmentType, appointmentLocation);
+                        employee.add(appointments);
+                    }
                 }
-                    
-                
-                
+    
             }
         }
 
         return appointments;
+        
+    }
+    
+    public int checkForImmediateAppoitments() throws SQLException, ParseException {
+        
+        int numberOfAppointments = 0;
+        Instant signIn = Instant.now();
+        
+        //used to convert time between UTC and system time zones
+        DateFormat utcDtf = new SimpleDateFormat("hh:mm:ss");
+        utcDtf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        DateFormat systemDtf = new SimpleDateFormat("hh:mm");
+        systemDtf.setTimeZone(LoginScreenController.timeZone);
+        Date appTime;
+                
+        String retrieveAppointments = "SELECT start FROM appointment WHERE userID=?";
+        PreparedStatement ps = conn.prepareStatement(retrieveAppointments);
+        ps.setInt(1, databaseUserId);
+        ResultSet rs = ps.executeQuery();
+        while(rs.next()) {
+            String date = rs.getDate("start").toString();
+            String time = rs.getTime("start").toString();
+            appTime = utcDtf.parse(time);
+            String appoitmenTime = systemDtf.format(appTime);
+            Instant appointmentTime = Instant.parse(date + "T" + appoitmenTime + ":00.000Z");
+            Duration timeUntil = Duration.between(signIn, appointmentTime);
+            if(timeUntil.getSeconds() < 900 && timeUntil.getSeconds() > 0) {
+                numberOfAppointments++;
+            }
+        }
+        return numberOfAppointments;
+    }
+    
+    public void retrieveMontlyCalender() throws SQLException, ParseException {
+        
+        String date;
+        String dbTime;
+        String time;
+        String type;
+        String employee;
+        int employeeId;
+        
+        DateFormat utcDtf = new SimpleDateFormat("hh:mm:ss");
+        utcDtf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        DateFormat systemDtf = new SimpleDateFormat("h:mm a");
+        systemDtf.setTimeZone(LoginScreenController.timeZone);
+        Date appTime;
+        
+        LocalDateTime now = LocalDateTime.now();
+        
+        String getAppointments = "Select start, type, userId FROM appointment ORDER BY start";
+        PreparedStatement ps = conn.prepareStatement(getAppointments);
+        ResultSet rs = ps.executeQuery();
+        while(rs.next()) {
+            LocalDateTime appointment = LocalDateTime.parse(rs.getString("start").replace(" ", "T"));
+            System.out.println("Made it");
+            if(now.getMonth() ==  appointment.getMonth()) {
+                System.out.println("Made it");
+                date = rs.getDate("start").toString();
+                dbTime = rs.getTime("start").toString();
+                appTime = utcDtf.parse(dbTime);
+                time = systemDtf.format(appTime);
+                type = rs.getString("type");
+                employeeId = rs.getInt("userId");
+                
+                String getEmployeeName = "SELECT userName FROM user WHERE userId=?";
+                PreparedStatement ps1 = conn.prepareStatement(getEmployeeName);
+                ps1.setInt(1, employeeId);
+                ResultSet rs1 = ps1.executeQuery();
+                while(rs1.next()) {
+                    employee = rs1.getString("userName");
+                    System.out.println(date);
+                    System.out.println(time);
+                    System.out.println(type);
+                    System.out.println(employee);
+                    CalenderDetails.addCalenderDetails(date, time, type, employee);
+                }
+            }
+        }
+        
+    }
+    
+    public void retrieveWeeklyCalender() throws SQLException, ParseException {
+        
+        String date;
+        String dbTime;
+        String time;
+        String type;
+        String employee;
+        int employeeId;
+        
+        DateFormat utcDtf = new SimpleDateFormat("hh:mm:ss");
+        utcDtf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        DateFormat systemDtf = new SimpleDateFormat("h:mm a");
+        systemDtf.setTimeZone(LoginScreenController.timeZone);
+        Date appTime;
+        
+        LocalDateTime now = LocalDateTime.now();
+        
+        String getAppointments = "Select start, type, userId FROM appointment ORDER BY start";
+        PreparedStatement ps = conn.prepareStatement(getAppointments);
+        ResultSet rs = ps.executeQuery();
+        while(rs.next()) {
+            LocalDateTime appointment = LocalDateTime.parse(rs.getString("start").replace(" ", "T"));
+            if(now.minusDays(1).isBefore(appointment) && now.plusDays(7).isAfter(appointment)) {
+                date = rs.getDate("start").toString();
+                dbTime = rs.getTime("start").toString();
+                appTime = utcDtf.parse(dbTime);
+                time = systemDtf.format(appTime);
+                type = rs.getString("type");
+                employeeId = rs.getInt("userId");
+                
+                String getEmployeeName = "SELECT userName FROM user WHERE userId=?";
+                PreparedStatement ps1 = conn.prepareStatement(getEmployeeName);
+                ps1.setInt(1, employeeId);
+                ResultSet rs1 = ps1.executeQuery();
+                while(rs1.next()) {
+                    employee = rs1.getString("userName");
+                    CalenderDetails.addCalenderDetails(date, time, type, employee);
+                }
+            }
+        }
         
     }
     

@@ -69,8 +69,8 @@ public class LoginScreenController implements Initializable {
             passwordField.clear();
             if(helper.connect(userName, userPassword)) {
                 
-                upcomingAppointments apps = new upcomingAppointments();
-                              
+                //create class for, and retrieve upcoming appointments for the user
+                upcomingAppointments apps = new upcomingAppointments();              
                 try {
                     helper.retrieveUpcomingAppointments();
                 } catch (ClassNotFoundException ex) {
