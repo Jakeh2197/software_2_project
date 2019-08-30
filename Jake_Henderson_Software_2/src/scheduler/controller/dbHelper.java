@@ -586,7 +586,7 @@ public class dbHelper {
     public int checkForImmediateAppoitments() throws SQLException, ParseException {
         
         int numberOfAppointments = 0;
-        Instant signIn = Instant.now();
+        LocalDateTime signIn = LocalDateTime.now();
         
         //used to convert time between UTC and system time zones
         DateFormat utcDtf = new SimpleDateFormat("hh:mm:ss");
@@ -604,7 +604,7 @@ public class dbHelper {
             String time = rs.getTime("start").toString();
             appTime = utcDtf.parse(time);
             String appoitmenTime = systemDtf.format(appTime);
-            Instant appointmentTime = Instant.parse(date + "T" + appoitmenTime + ":00.000Z");
+            LocalDateTime appointmentTime = LocalDateTime.parse(date + "T" + appoitmenTime + ":00.000");
             Duration timeUntil = Duration.between(signIn, appointmentTime);
             if(timeUntil.getSeconds() < 900 && timeUntil.getSeconds() > 0) {
                 numberOfAppointments++;
@@ -635,9 +635,7 @@ public class dbHelper {
         ResultSet rs = ps.executeQuery();
         while(rs.next()) {
             LocalDateTime appointment = LocalDateTime.parse(rs.getString("start").replace(" ", "T"));
-            System.out.println("Made it");
             if(now.getMonth() ==  appointment.getMonth()) {
-                System.out.println("Made it");
                 date = rs.getDate("start").toString();
                 dbTime = rs.getTime("start").toString();
                 appTime = utcDtf.parse(dbTime);
@@ -651,10 +649,6 @@ public class dbHelper {
                 ResultSet rs1 = ps1.executeQuery();
                 while(rs1.next()) {
                     employee = rs1.getString("userName");
-                    System.out.println(date);
-                    System.out.println(time);
-                    System.out.println(type);
-                    System.out.println(employee);
                     CalenderDetails.addCalenderDetails(date, time, type, employee);
                 }
             }
