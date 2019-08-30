@@ -17,9 +17,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.TimeZone;
@@ -232,7 +230,7 @@ public class dbHelper {
         
         String employeeName;
         
-        String retrieveNames = "SELECT userName FROM user";
+        String retrieveNames = "SELECT userName FROM user WHERE active=0";
         PreparedStatement ps = conn.prepareStatement(retrieveNames);
         ResultSet rs = ps.executeQuery();
         while(rs.next()) {

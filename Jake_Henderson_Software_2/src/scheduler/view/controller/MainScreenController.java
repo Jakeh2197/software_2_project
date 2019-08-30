@@ -10,11 +10,10 @@ import java.net.URL;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -22,6 +21,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.MenuButton;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -69,6 +70,10 @@ public class MainScreenController implements Initializable {
     private Button weeklyCalenderButton;
     @FXML
     private Button employeeSchedulesButton;
+    @FXML 
+    private Button appointmentCountButton;
+    @FXML
+    private Button changeLogButton;
     
     
     /**
@@ -278,6 +283,16 @@ public class MainScreenController implements Initializable {
         stage.setOnCloseRequest((WindowEvent we) -> {
             CalenderDetails.calenderDetails.clear();
         });
+        
+    }
+    
+    @FXML 
+    private void appointmentCountButtonHandler(ActionEvent event) {
+        
+    }
+    
+    @FXML 
+    private void changeLogButtonHandler(ActionEvent event) {
         
     }
 
