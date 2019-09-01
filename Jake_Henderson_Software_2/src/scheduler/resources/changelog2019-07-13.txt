@@ -1,5 +1,0 @@
-
-test added new customer: Mike Henderson
-Jake added new customer: Laura Love
-Jake deleted customer: Laura Love
-test deleted appointment: 72

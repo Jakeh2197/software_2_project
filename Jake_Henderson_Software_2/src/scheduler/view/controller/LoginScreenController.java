@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
 import javafx.event.ActionEvent;
@@ -41,6 +42,9 @@ public class LoginScreenController implements Initializable {
     
     public static dbHelper helper;
     public static TimeZone timeZone = TimeZone.getDefault();
+    public static Locale locale = Locale.getDefault();
+    ResourceBundle rb = ResourceBundle.getBundle("language_files/rb", locale);
+    
         
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -50,6 +54,7 @@ public class LoginScreenController implements Initializable {
     @FXML
     private void loginButtonHandler(ActionEvent event) throws IOException, ClassNotFoundException, SQLException, ParseException {
         
+        
         helper = new dbHelper();
                         
 //        verify username and password fields are not empty
@@ -57,7 +62,7 @@ public class LoginScreenController implements Initializable {
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Information Dialog");
             alert.setHeaderText("Error!");
-            alert.setContentText("User name and Password are required");
+            alert.setContentText(rb.getString("noEntry"));
             alert.showAndWait();
         }
 //        compare entries to database values
@@ -92,7 +97,7 @@ public class LoginScreenController implements Initializable {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
                 alert.setTitle("Information Dialog");
                 alert.setHeaderText("Error!");
-                alert.setContentText("User Name or Password not found");
+                alert.setContentText(rb.getString("noMatch"));
                 alert.showAndWait();
             }
         }

@@ -1,0 +1,3 @@
+test added new customer: Jerry Seinfield
+test created a new appointment
+test deleted appointment: 129

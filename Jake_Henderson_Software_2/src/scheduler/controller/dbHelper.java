@@ -436,7 +436,7 @@ public class dbHelper {
         LogPrintWriter.writeChangeLog(change);
     }
     
-    public void addAppointment(String customerName, String employeeName, String title, String description, String location, String contact, String type, String startDate,  String endDate) throws SQLException, DateTimeParseException {
+    public void addAppointment(String customerName, String employeeName, String title, String description, String location, String contact, String type, String startDate,  String endDate) throws SQLException, DateTimeParseException, IOException {
                 
         String userName = this.retrieveUserName(databaseUserId);
         int userId = 0;
@@ -494,6 +494,9 @@ public class dbHelper {
             ps2.setString(11, userName);
             ps2.setString(12, userName);
             ps2.executeUpdate();
+            
+            String change = userName + " created a new appointment";
+            LogPrintWriter.writeChangeLog(change);
             
         }
   

@@ -5,12 +5,14 @@
  */
 package scheduler.view.controller;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.ResourceBundle;
 import java.util.TimeZone;
@@ -101,7 +103,7 @@ public class AddAppointmentScreenController implements Initializable {
     }    
 
     @FXML
-    private void saveAppointmentButtonHandler(ActionEvent event) throws SQLException, ParseException {
+    private void saveAppointmentButtonHandler(ActionEvent event) throws SQLException, ParseException, DateTimeParseException, IOException {
         
         //collect user entered data from text fields
         String location = locationTextField.getText();

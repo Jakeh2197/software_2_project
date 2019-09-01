@@ -5,8 +5,18 @@
  */
 package scheduler.view.controller;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.ResourceBundle;
@@ -23,10 +33,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.WindowEvent;
+import scheduler.Launcher;
+import static scheduler.Launcher.main;
 import scheduler.model.AppointmentCount;
 import scheduler.model.AppointmentDetails;
 import scheduler.model.CalenderDetails;
@@ -326,7 +340,33 @@ public class MainScreenController implements Initializable {
     }
     
     @FXML 
-    private void changeLogButtonHandler(ActionEvent event) {
+    private void changeLogButtonHandler(ActionEvent event) throws IOException {
+        
+        AnchorPane window = new AnchorPane();
+        window.setMinHeight(150);
+        window.setMinWidth(450);
+        window.setMaxWidth(450);
+        
+        TextArea text = new TextArea();
+        
+        window.getChildren().add(text);
+        
+        
+        File file = new File("src/scheduler/resources/changelog.");
+        BufferedReader br = new BufferedReader(new FileReader(file));
+        String line;
+        while((line = br.readLine()) != null) {
+            text.appendText(line + "\n");
+            
+        }
+        
+        Parent root = FXMLLoader.load(getClass().
+                getResource("../appointmentTypeCount.fxml")); 
+        Scene scene = new Scene(window);
+        Stage stage = new Stage();
+        stage.setTitle("Scheduler");
+        stage.setScene(scene);
+        stage.show();
         
     }
 

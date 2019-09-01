@@ -9,9 +9,6 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 
 /**
  *
@@ -33,10 +30,7 @@ public class LogPrintWriter {
     
     public static void writeChangeLog(String change) throws IOException {
 
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
-        LocalDate now = LocalDate.now();
-
-        File changeLog = new File("src/scheduler/resources/changelog" + now + ".txt");
+        File changeLog = new File("src/scheduler/resources/changelog.txt");
         
         changeLog.setWritable(true);
         FileWriter fileWriter = new FileWriter(changeLog, true);
