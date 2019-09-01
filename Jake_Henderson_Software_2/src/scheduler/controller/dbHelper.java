@@ -17,12 +17,14 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.Date;
 import java.util.TimeZone;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Alert;
+import scheduler.model.AppointmentCount;
 import scheduler.model.AppointmentDetails;
 import scheduler.model.CalenderDetails;
 import scheduler.model.CustomerDetail;
@@ -697,9 +699,34 @@ public class dbHelper {
         
     }
     
+    public AppointmentCount appointmentTypeCount(ObservableList appointmentCount) throws SQLException {
+        
+        AppointmentCount appCount = null;
+        
+        LocalDate now = LocalDate.now();
+        
+        String appointmentType;
+        int count;
+        
+        String retrieveAppointmentTypes = "SELECT type, start, COUNT(type) AS count FROM appointment GROUP BY type";
+        PreparedStatement ps = conn.prepareStatement(retrieveAppointmentTypes);
+        ResultSet rs = ps.executeQuery();
+        while(rs.next()) {
+            LocalDate appDate = rs.getDate("start").toLocalDate();
+            if(now.getMonth() == appDate.getMonth()) {
+                appointmentType = rs.getString("type");
+                count = rs.getInt("count");
+                appCount = new AppointmentCount(appointmentType, count);
+                appointmentCount.add(appCount);
+            } 
+        }
+        return appCount;
+    }
+    
     public static int getUserId() {
         return databaseUserId;
     }
+    
         
     public  void setUserId(int aUserId) {
         databaseUserId = aUserId;

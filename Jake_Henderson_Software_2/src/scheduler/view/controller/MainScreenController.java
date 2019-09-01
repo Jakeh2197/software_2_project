@@ -13,7 +13,6 @@ import java.util.ResourceBundle;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -21,8 +20,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.MenuButton;
-import javafx.scene.control.MenuItem;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -30,6 +27,7 @@ import javafx.stage.Stage;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.VBox;
 import javafx.stage.WindowEvent;
+import scheduler.model.AppointmentCount;
 import scheduler.model.AppointmentDetails;
 import scheduler.model.CalenderDetails;
 import scheduler.model.CustomerDetail;
@@ -207,7 +205,7 @@ public class MainScreenController implements Initializable {
             TableColumn<String, EmployeeAppointments> typeColumn = new TableColumn<>("Appointment Type");
             TableColumn<String, EmployeeAppointments> locationColumn = new TableColumn<>("Location");
             
-            schedulesTable.setMinHeight(200);
+            schedulesTable.setMaxHeight(200);
             schedulesTable.setMinWidth(625);
             employeeColumn.setMinWidth(625);
             employeeColumn.setText(n.getName());
@@ -287,7 +285,43 @@ public class MainScreenController implements Initializable {
     }
     
     @FXML 
-    private void appointmentCountButtonHandler(ActionEvent event) {
+    private void appointmentCountButtonHandler(ActionEvent event) throws SQLException, IOException {
+        
+        System.out.println("Made it");
+        
+        ScrollPane window = new ScrollPane();
+        window.setMaxHeight(650);
+        VBox content = new VBox();
+        
+        ObservableList<AppointmentCount> appointmentCount = FXCollections.observableArrayList();
+        
+        helper.appointmentTypeCount(appointmentCount);
+        
+        TableView appointmentCountTable = new TableView();
+        
+        TableColumn<String, AppointmentCount> appointmentTypeColumn = new TableColumn("Appointment Type");
+        TableColumn<Integer, AppointmentCount> countColumn = new TableColumn("Count");
+        
+        appointmentCountTable.setMaxHeight(400);
+        appointmentTypeColumn.setMinWidth(150);
+        countColumn.setMinWidth(150);
+        
+        appointmentCountTable.setItems(appointmentCount);
+        appointmentTypeColumn.setCellValueFactory(new PropertyValueFactory("appointmentType"));
+        countColumn.setCellValueFactory(new PropertyValueFactory("count"));
+        
+        appointmentCountTable.getColumns().setAll(appointmentTypeColumn, countColumn);
+        content.getChildren().add(appointmentCountTable);
+        
+        window.setContent(content);
+
+        Parent root = FXMLLoader.load(getClass().
+                getResource("../appointmentTypeCount.fxml")); 
+        Scene scene = new Scene(window);
+        Stage stage = new Stage();
+        stage.setTitle("Scheduler");
+        stage.setScene(scene);
+        stage.show();
         
     }
     
